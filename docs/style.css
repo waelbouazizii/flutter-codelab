@@ -108,6 +108,18 @@ a { color: var(--accent); }
 .step-stuck { background: var(--stuck-bg); border-color: var(--stuck-border); }
 .step-bonus { background: var(--bonus-bg); border-color: var(--bonus-border); }
 
+.step-why { margin: 0.5rem 0; }
+.file-name { margin: 0.75rem 0 -0.5rem; font-weight: 600; color: var(--muted); }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li::before { content: "☐ "; }
+.note { color: var(--muted); }
+.break-note {
+  text-align: center;
+  font-weight: 700;
+  color: var(--muted);
+  margin: -0.5rem 0 1.5rem;
+}
+
 .step-done-toggle {
   display: inline-flex;
   align-items: center;
