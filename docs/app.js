@@ -1,23 +1,33 @@
-// Codelab page behavior: copy buttons on code blocks and step progress.
+// Codelab page behavior: copy buttons, one-panel navigation, progress and language switch.
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'flutter-codelab-progress';
+  var PROGRESS_KEY = 'flutter-codelab-progress';
+  var LANG_KEY = 'flutter-codelab-lang';
+  var lang = document.documentElement.lang === 'fr' ? 'fr' : 'en';
 
-  function loadProgress() {
+  function storageGet(key) {
     try {
-      var raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
+      return window.localStorage.getItem(key);
     } catch (e) {
-      return {};
+      return null;
     }
   }
 
-  function saveProgress(progress) {
+  function storageSet(key, value) {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      window.localStorage.setItem(key, value);
     } catch (e) {
-      // Storage unavailable (private mode, blocked): progress is not saved.
+      // Storage unavailable (private mode, blocked): the choice is not saved.
+    }
+  }
+
+  function loadProgress() {
+    try {
+      var parsed = JSON.parse(storageGet(PROGRESS_KEY) || '{}');
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (e) {
+      return {};
     }
   }
 
@@ -44,10 +54,12 @@
   }
 
   function setupCopyButtons() {
-    var lang = document.documentElement.lang === 'fr' ? 'fr' : 'en';
     var labels = lang === 'fr'
       ? { copy: 'Copier', copied: 'Copié !', failed: 'Échec' }
       : { copy: 'Copy', copied: 'Copied!', failed: 'Failed' };
+    var copyHtml = '<i class="fa-regular fa-copy" aria-hidden="true"></i><span>' + labels.copy + '</span>';
+    var copiedHtml = '<i class="fa-solid fa-check" aria-hidden="true"></i><span>' + labels.copied + '</span>';
+    var failedHtml = '<i class="fa-solid fa-xmark" aria-hidden="true"></i><span>' + labels.failed + '</span>';
 
     document.querySelectorAll('pre > code').forEach(function (code) {
       var pre = code.parentNode;
@@ -59,16 +71,18 @@
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'copy-btn';
-      btn.textContent = labels.copy;
+      btn.innerHTML = copyHtml;
+      var timer = null;
       btn.addEventListener('click', function () {
         copyText(code.textContent).then(function () {
-          btn.textContent = labels.copied;
+          btn.innerHTML = copiedHtml;
           btn.classList.add('copied');
         }, function () {
-          btn.textContent = labels.failed;
+          btn.innerHTML = failedHtml;
         });
-        setTimeout(function () {
-          btn.textContent = labels.copy;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          btn.innerHTML = copyHtml;
           btn.classList.remove('copied');
         }, 1500);
       });
@@ -76,43 +90,140 @@
     });
   }
 
-  function setupProgress() {
-    var lang = document.documentElement.lang === 'fr' ? 'fr' : 'en';
-    var label = lang === 'fr' ? 'Étape terminée' : 'Step done';
-    var steps = document.querySelectorAll('section.step[id^="step-"]');
+  function setupNavigation() {
+    var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+    if (panels.length === 0) return;
+    var ids = panels.map(function (p) { return p.id; });
+    var navItems = document.querySelectorAll('.nav-item');
+    var prevBtn = document.querySelector('.nav-btn[data-dir="-1"]');
+    var nextBtn = document.querySelector('.nav-btn[data-dir="1"]');
+    var title = document.getElementById('panel-title');
+    var content = document.getElementById('content');
     var bar = document.querySelector('.progress-bar');
+    var langLinks = document.querySelectorAll('.lang-toggle a[data-lang]');
+    var menuBtn = document.querySelector('.menu-btn');
+    var overlay = document.getElementById('overlay');
     var progress = loadProgress();
+    var current = -1;
 
-    function updateBar() {
-      if (!bar || steps.length === 0) return;
-      var done = 0;
-      steps.forEach(function (s) { if (progress[s.id]) done++; });
-      bar.style.width = (100 * done / steps.length) + '%';
+    function indexFromHash() {
+      var index = ids.indexOf(window.location.hash.slice(1));
+      return index === -1 ? 0 : index;
     }
 
-    steps.forEach(function (step) {
-      var toggle = document.createElement('label');
-      toggle.className = 'step-done-toggle';
-      var box = document.createElement('input');
-      box.type = 'checkbox';
-      box.checked = !!progress[step.id];
-      step.classList.toggle('is-done', box.checked);
-      box.addEventListener('change', function () {
-        progress[step.id] = box.checked;
-        step.classList.toggle('is-done', box.checked);
-        saveProgress(progress);
-        updateBar();
+    function show(index) {
+      if (index === current) return;
+      current = index;
+      var id = ids[index];
+
+      panels.forEach(function (p, i) { p.classList.toggle('is-active', i === index); });
+
+      // Every step before the current panel counts as completed.
+      for (var i = 0; i < index; i++) {
+        if (ids[i] !== 'prerequisites') progress[ids[i]] = true;
+      }
+      storageSet(PROGRESS_KEY, JSON.stringify(progress));
+
+      navItems.forEach(function (item) {
+        var itemId = item.getAttribute('data-panel');
+        var active = itemId === id;
+        item.classList.toggle('is-active', active);
+        item.classList.toggle('is-done', !!progress[itemId] || (itemId === 'prerequisites' && index > 0));
+        if (active) {
+          item.setAttribute('aria-current', 'step');
+        } else {
+          item.removeAttribute('aria-current');
+        }
       });
-      toggle.appendChild(box);
-      toggle.appendChild(document.createTextNode(label));
-      step.appendChild(toggle);
+
+      var heading = panels[index].querySelector('h2');
+      if (title && heading) title.textContent = heading.textContent;
+      if (prevBtn) prevBtn.disabled = index === 0;
+      if (nextBtn) nextBtn.disabled = index === panels.length - 1;
+      if (bar) bar.style.width = (100 * (index + 1) / panels.length) + '%';
+      if (content) content.scrollTop = 0;
+
+      langLinks.forEach(function (a) {
+        a.setAttribute('href', a.getAttribute('data-lang') + '.html#' + id);
+      });
+    }
+
+    function go(index) {
+      if (index < 0 || index >= panels.length) return;
+      var hash = '#' + ids[index];
+      if (window.location.hash !== hash) {
+        history.pushState(null, '', hash);
+      }
+      show(index);
+    }
+
+    function setDrawer(open) {
+      document.body.classList.toggle('drawer-open', open);
+      if (overlay) overlay.hidden = !open;
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    navItems.forEach(function (item) {
+      item.addEventListener('click', function (event) {
+        event.preventDefault();
+        go(ids.indexOf(item.getAttribute('data-panel')));
+        setDrawer(false);
+      });
     });
 
-    updateBar();
+    if (prevBtn) prevBtn.addEventListener('click', function () { go(current - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { go(current + 1); });
+    if (menuBtn) menuBtn.addEventListener('click', function () {
+      setDrawer(!document.body.classList.contains('drawer-open'));
+    });
+    if (overlay) overlay.addEventListener('click', function () { setDrawer(false); });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      var target = event.target;
+      var tag = target && target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (target && target.isContentEditable)) return;
+      if (event.key === 'ArrowLeft') {
+        go(current - 1);
+      } else if (event.key === 'ArrowRight') {
+        go(current + 1);
+      } else if (event.key === 'Escape') {
+        setDrawer(false);
+      }
+    });
+
+    window.addEventListener('hashchange', function () { show(indexFromHash()); });
+    window.addEventListener('popstate', function () { show(indexFromHash()); });
+
+    langLinks.forEach(function (a) {
+      a.addEventListener('click', function (event) {
+        var target = a.getAttribute('data-lang');
+        storageSet(LANG_KEY, target);
+        if (target === lang) {
+          event.preventDefault();
+          return;
+        }
+        event.preventDefault();
+        window.location.href = target + '.html' + window.location.hash;
+      });
+    });
+
+    // No hash or an unknown one: show the prerequisites and put its hash in the URL.
+    var startIndex = indexFromHash();
+    if (window.location.hash !== '#' + ids[startIndex]) {
+      history.replaceState(null, '', '#' + ids[startIndex]);
+    }
+    show(startIndex);
+
+    // The browser's own jump to the #hash anchor can run after this script.
+    window.addEventListener('load', function () {
+      if (content) content.scrollTop = 0;
+      window.scrollTo(0, 0);
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     setupCopyButtons();
-    setupProgress();
+    setupNavigation();
   });
 })();

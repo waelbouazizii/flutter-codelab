@@ -1,22 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flutter Codelab — Notes App</title>
+  <script>
+    (function () {
+      var lang = 'fr';
+      try {
+        if (window.localStorage.getItem('flutter-codelab-lang') === 'en') lang = 'en';
+      } catch (e) {
+        // Storage unavailable: keep French, the default.
+      }
+      window.location.replace(lang + '.html' + window.location.hash);
+    })();
+  </script>
+  <noscript><meta http-equiv="refresh" content="0; url=fr.html"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="chooser">
-  <main class="chooser-main">
-    <h1>Flutter Codelab — <code>notes_app</code></h1>
-    <p class="chooser-sub">Choisissez votre langue · Choose your language</p>
-    <div class="chooser-buttons">
-      <a class="lang-btn" href="fr.html" hreflang="fr" lang="fr">FR<span>Français</span></a>
-      <a class="lang-btn" href="en.html" hreflang="en" lang="en">EN<span>English</span></a>
-    </div>
-  </main>
+<body class="redirect">
+  <p><a href="fr.html">Flutter Codelab — <code>notes_app</code></a></p>
 </body>
 </html>

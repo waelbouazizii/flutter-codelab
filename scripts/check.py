@@ -28,6 +28,14 @@ CODE_BLOCK_RE = re.compile(
 )
 UNACCENTED_ETAPE_RE = re.compile(r"\b[Ee]tape\b|\bETAPE\b")
 
+# Emoji and pictographs are not allowed in the pages: use Font Awesome icons.
+EMOJI_RANGES = ((0x2600, 0x27BF), (0x1F000, 0x1FAFF), (0xFE0F, 0xFE0F))
+
+
+def is_emoji(char):
+    point = ord(char)
+    return any(low <= point <= high for low, high in EMOJI_RANGES)
+
 
 class Step:
     def __init__(self, step_id, pos):
@@ -128,7 +136,15 @@ def main():
         parsed[lang] = parser
         code_blocks[lang] = CODE_BLOCK_RE.findall(text)
 
-    if failures:
+        for line_no, line in enumerate(text.splitlines(), 1):
+            for char in line:
+                if is_emoji(char):
+                    failures.append(
+                        f"{path.name}: line {line_no}: emoji {char!r} (U+{ord(char):04X}); "
+                        "use a Font Awesome icon instead"
+                    )
+
+    if len(parsed) < len(PAGES):
         report(failures, notes)
         return 1
 

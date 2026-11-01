@@ -1,6 +1,6 @@
 /* Shared styles for the codelab pages: readable on phone and projector.
-   Flutter look: Flutter blues (#02569B, #0175C2, #13B9FD), navy header,
-   Roboto for prose, Roboto Mono for code, Prism highlighting for Dart. */
+   Layout: navy sidebar + one panel at a time. Flutter blues, Roboto for prose,
+   Roboto Mono for code, Prism (prism-tomorrow) highlighting, Font Awesome icons. */
 
 :root {
   /* Flutter palette */
@@ -17,10 +17,10 @@
   --accent: var(--flutter-blue);
   --accent-strong: var(--flutter-blue-dark);
   --accent-soft: #e3f2fd;
-  --accent-text: #ffffff;
-  --header-bg: var(--flutter-navy);
-  --header-text: #ffffff;
-  --header-muted: #b8cde3;
+  --topbar-bg: #ffffff;
+  --sidebar-bg: var(--flutter-navy);
+  --sidebar-text: #e6eef7;
+  --sidebar-muted: #a9c0d8;
   --code-bg: #0b1d33;
   --code-text: #e6edf5;
   --inline-code-bg: #e8f1fa;
@@ -30,10 +30,12 @@
   --bonus-bg: #e8f8fe;
   --bonus-border: #13b9fd;
   --done: #1e8e5a;
-  --radius: 12px;
+  --focus: #0175c2;
+  --radius: 8px;
   --shadow: 0 1px 2px rgba(4, 43, 89, 0.06), 0 2px 6px rgba(4, 43, 89, 0.08);
   --font-sans: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Roboto Mono", Consolas, "Cascadia Code", monospace;
+  --sidebar-width: 18rem;
   color-scheme: light;
 }
 
@@ -42,15 +44,15 @@
     --bg: #0a1622;
     --surface: #12212f;
     --text: #e3ecf4;
-    --muted: #9fb2c4;
+    --muted: #a3b5c6;
     --border: #23384c;
     --accent: #4fc3f7;
     --accent-strong: #81d4fa;
     --accent-soft: #10314a;
-    --accent-text: #04223b;
-    --header-bg: #051a33;
-    --header-text: #ffffff;
-    --header-muted: #9fb8d2;
+    --topbar-bg: #0f1d2b;
+    --sidebar-bg: #051a33;
+    --sidebar-text: #e6eef7;
+    --sidebar-muted: #9fb8d2;
     --code-bg: #06121f;
     --code-text: #e6edf5;
     --inline-code-bg: #173048;
@@ -60,6 +62,7 @@
     --bonus-bg: #0e2a3a;
     --bonus-border: #13b9fd;
     --done: #5cc98a;
+    --focus: #4fc3f7;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.3);
     color-scheme: dark;
   }
@@ -67,11 +70,14 @@
 
 * { box-sizing: border-box; }
 
-html { font-size: 18px; scroll-behavior: smooth; }
+html { font-size: 18px; height: 100%; }
 @media (min-width: 1200px) { html { font-size: 20px; } }
 
 body {
   margin: 0;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
@@ -84,77 +90,202 @@ strong { font-weight: 700; }
 a { color: var(--accent); }
 a:hover { color: var(--accent-strong); }
 
-/* Header */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--header-bg);
-  color: var(--header-text);
-  box-shadow: 0 2px 8px rgba(4, 43, 89, 0.25);
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
-.header-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0.65rem 16px;
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  flex: none;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+}
+.sidebar-head {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.course-name { margin: 0; font-size: 1.05rem; font-weight: 500; }
+.course-name code { color: var(--flutter-sky); font-size: 0.9em; }
+.course-sub { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--sidebar-muted); }
+
+.nav-list { list-style: none; margin: 0; padding: 0.5rem 0 1.5rem; }
+.nav-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-}
-.home-link { font-weight: 500; text-decoration: none; color: var(--header-text); }
-.home-link:hover { color: var(--flutter-sky); }
-.site-header .home-link code {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--flutter-sky);
-}
-.lang-switch {
-  padding: 0.3rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
-  color: var(--header-text);
+  gap: 0.75rem;
+  padding: 0.55rem 1rem 0.55rem calc(1rem - 3px);
+  border-left: 3px solid transparent;
+  color: var(--sidebar-text);
   text-decoration: none;
-  white-space: nowrap;
-  font-size: 0.9rem;
+  line-height: 1.3;
 }
-.lang-switch:hover { background: rgba(255, 255, 255, 0.12); color: var(--header-text); }
-.progress { height: 4px; background: rgba(255, 255, 255, 0.15); }
+.nav-item:hover { background: rgba(255, 255, 255, 0.06); color: #ffffff; }
+.nav-item.is-active {
+  background: rgba(19, 185, 253, 0.16);
+  border-left-color: var(--flutter-sky);
+  color: #ffffff;
+}
+.nav-item:focus-visible { outline-color: var(--flutter-sky); outline-offset: -3px; border-radius: 0; }
+.nav-marker {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.nav-item.is-active .nav-marker { border-color: var(--flutter-sky); color: var(--flutter-sky); }
+.nav-check { display: none; }
+.nav-item.is-done .nav-marker { background: #1e8e5a; border-color: #1e8e5a; color: #ffffff; }
+.nav-item.is-done .nav-num { display: none; }
+.nav-item.is-done .nav-check { display: inline; }
+.nav-text { display: flex; flex-direction: column; min-width: 0; }
+.nav-kicker { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sidebar-muted); }
+.nav-title { font-size: 0.9rem; }
+.nav-break {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.35rem 1rem;
+  padding: 0.35rem 0.6rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+  font-size: 0.78rem;
+  color: var(--sidebar-muted);
+}
+
+/* Main column */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+.topbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+}
+.panel-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.icon-btn,
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.3rem;
+  padding: 0.3rem 0.8rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-strong);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.icon-btn:hover,
+.nav-btn:hover:not(:disabled) { background: var(--accent-soft); }
+.nav-btn:disabled { opacity: 0.4; cursor: default; }
+.menu-btn { display: none; padding: 0.3rem 0.7rem; }
+.pager { display: flex; gap: 0.4rem; flex: none; }
+
+.lang-toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem 0.15rem 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--accent);
+}
+.lang-toggle i { margin-right: 0.3rem; }
+.lang-toggle a {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.lang-toggle a:hover { color: var(--accent-strong); background: var(--accent-soft); }
+.lang-toggle a.is-active { background: var(--flutter-blue); color: #ffffff; }
+
+.progress { flex: none; height: 4px; background: var(--border); }
 .progress-bar {
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, var(--flutter-blue), var(--flutter-sky));
+  background: linear-gradient(90deg, #0175c2, #13b9fd);
   transition: width 0.3s ease-in-out;
 }
 
-/* Steps */
-.steps { max-width: 900px; margin: 0 auto; padding: 1.5rem 16px 3rem; }
+.content { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.content-inner { max-width: 56rem; margin: 0 auto; padding: 1.5rem 16px 2rem; }
 
-.step, #prerequisites {
+/* Panels: one at a time when the script runs; all visible without it. */
+.js .panel { display: none; }
+.js .panel.is-active { display: block; }
+
+.panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-top: 4px solid var(--accent);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.25rem 1.25rem 1rem;
   margin-bottom: 1.5rem;
-  scroll-margin-top: 5rem;
 }
-#prerequisites { border-top-color: var(--flutter-sky); }
-.step h2, #prerequisites h2 { margin-top: 0; color: var(--accent-strong); }
-.step.is-done { border-top-color: var(--done); }
-.step.is-done h2 { color: var(--done); }
+.panel h2 { margin-top: 0; color: var(--accent-strong); }
+.panel h3 { color: var(--accent-strong); }
+
+.ic { color: var(--accent); margin-right: 0.45em; }
+.ic-inline { color: var(--done); }
 
 .step-goal {
   background: var(--accent-soft);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 0.6rem 0.9rem;
 }
-.step-duration { color: var(--muted); font-weight: 500; margin: 0.5rem 0; }
+.step-duration { color: var(--muted); font-weight: 500; margin: 0.6rem 0; }
+.step-why { margin: 0.5rem 0; }
+.step-instructions { padding-left: 1.4rem; }
 .step-instructions li { margin-bottom: 0.75rem; }
 .step-instructions li::marker { color: var(--accent); font-weight: 700; }
-.step-result { border-left: 4px solid var(--done); padding-left: 0.75rem; margin-top: 1rem; }
-.step-stuck, .step-bonus {
-  border-radius: 8px;
+.step-result {
+  border-left: 4px solid var(--done);
+  padding: 0.3rem 0 0.3rem 0.75rem;
+  margin-top: 1rem;
+}
+.step-result > strong .ic { color: var(--done); }
+.step-stuck,
+.step-bonus {
+  border-radius: var(--radius);
   padding: 0.75rem 1rem;
   margin-top: 1rem;
   border: 1px solid;
@@ -162,7 +293,6 @@ a:hover { color: var(--accent-strong); }
 .step-stuck { background: var(--stuck-bg); border-color: var(--stuck-border); }
 .step-bonus { background: var(--bonus-bg); border-color: var(--bonus-border); }
 
-.step-why { margin: 0.5rem 0; }
 .file-name {
   margin: 0.75rem 0 -0.5rem;
   font-family: var(--font-mono);
@@ -171,48 +301,42 @@ a:hover { color: var(--accent-strong); }
   color: var(--accent-strong);
 }
 .checklist { list-style: none; padding-left: 0; }
-.checklist li::before { content: "☐ "; color: var(--accent); }
+.checklist li { margin-bottom: 0.3rem; }
 .note { color: var(--muted); }
 .break-note {
+  margin: 1.25rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border);
   text-align: center;
   font-weight: 500;
   color: var(--muted);
-  margin: -0.5rem 0 1.5rem;
 }
-
-.step-done-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-.step-done-toggle input { width: 1.2rem; height: 1.2rem; accent-color: var(--done); }
 
 table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
 th, td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 th { background: var(--accent-soft); font-weight: 500; }
+.step-stuck th { background: rgba(240, 168, 74, 0.18); }
 
 /* Code */
-code { font-family: var(--font-mono); font-size: 0.88em; }
+code { font-family: var(--font-mono); font-size: 0.88em; overflow-wrap: anywhere; }
 :not(pre) > code {
   background: var(--inline-code-bg);
   color: var(--inline-code-text);
   padding: 0.1em 0.35em;
   border-radius: 4px;
 }
-.code-wrap { position: relative; margin: 0.75rem 0; }
+.code-wrap { position: relative; margin: 0.75rem 0; max-width: 100%; }
 pre,
 pre[class*="language-"] {
   margin: 0;
   background: var(--code-bg);
   color: var(--code-text);
   padding: 1rem;
-  padding-top: 2.4rem;
-  border-radius: 8px;
+  padding-top: 2.6rem;
+  border-radius: var(--radius);
   overflow-x: auto;
   line-height: 1.5;
+  text-shadow: none;
 }
 pre code,
 pre code[class*="language-"] {
@@ -221,14 +345,19 @@ pre code[class*="language-"] {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   text-shadow: none;
+  overflow-wrap: normal;
+  white-space: pre;
 }
 .copy-btn {
   position: absolute;
-  top: 0.4rem;
-  right: 0.4rem;
+  top: 0.45rem;
+  right: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.25rem 0.7rem;
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
@@ -237,41 +366,46 @@ pre code[class*="language-"] {
   cursor: pointer;
 }
 .copy-btn:hover { background: rgba(19, 185, 253, 0.32); }
-.copy-btn.copied { background: var(--done); border-color: var(--done); color: #ffffff; }
+.copy-btn:focus-visible { outline-color: var(--flutter-sky); }
+.copy-btn.copied { background: #1e8e5a; border-color: #1e8e5a; color: #ffffff; }
 
 /* Footer */
-.site-footer { text-align: center; color: var(--muted); padding: 1rem 16px 2rem; font-size: 0.85rem; }
+.site-footer { text-align: center; color: var(--muted); padding: 0 16px 2rem; font-size: 0.85rem; }
 
-/* Language chooser */
-.chooser {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(160deg, var(--flutter-navy) 0%, var(--flutter-blue-dark) 60%, var(--flutter-blue) 100%);
-  color: #ffffff;
+/* Redirect page (index.html) fallback */
+.redirect { align-items: center; justify-content: center; }
+
+/* Overlay for the mobile drawer */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(2, 12, 24, 0.6);
 }
-.chooser h1 { font-weight: 500; }
-.chooser h1 code { background: rgba(255, 255, 255, 0.12); color: var(--flutter-sky); }
-.chooser-main { text-align: center; padding: 2rem 16px; }
-.chooser-sub { color: #b8cde3; }
-.chooser-buttons { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 2rem; }
-.lang-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 12rem;
-  height: 9rem;
-  font-size: 3rem;
-  font-weight: 700;
-  text-decoration: none;
-  border-radius: var(--radius);
-  background: #ffffff;
-  color: var(--flutter-blue-dark);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease-in-out;
+.overlay[hidden] { display: none; }
+
+/* Phone and small tablet: the sidebar becomes a drawer. */
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 30;
+    width: min(var(--sidebar-width), 85vw);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out, visibility 0.25s;
+    visibility: hidden;
+  }
+  .drawer-open .sidebar { transform: translateX(0); visibility: visible; }
+  .menu-btn { display: inline-flex; }
+  .btn-label { display: none; }
+  .topbar { gap: 0.4rem; padding: 0.45rem 0.6rem; }
+  .icon-btn, .nav-btn { padding: 0.3rem 0.6rem; }
+  .panel { padding: 1rem 0.9rem 0.75rem; }
+  .content-inner { padding: 1rem 12px 1.5rem; }
 }
-.lang-btn span { font-size: 1rem; font-weight: 500; color: var(--flutter-blue); }
-.lang-btn:hover, .lang-btn:focus-visible { transform: translateY(-3px); color: var(--flutter-blue-dark); }
-.lang-btn:focus-visible { outline: 3px solid var(--flutter-sky); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .progress-bar { transition: none; }
+}

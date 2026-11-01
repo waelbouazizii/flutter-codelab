@@ -4,23 +4,55 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flutter Codelab — Notes App</title>
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="home-link" href="index.html">Flutter Codelab — <code>notes_app</code></a>
-      <a class="lang-switch" href="fr.html" hreflang="fr" lang="fr">Français</a>
+  <aside class="sidebar" id="sidebar" aria-label="Contents">
+    <div class="sidebar-head">
+      <p class="course-name">Flutter Codelab — <code>notes_app</code></p>
+      <p class="course-sub">Guest workshop · 3 h</p>
     </div>
-    <div class="progress" aria-hidden="true"><div class="progress-bar"></div></div>
-  </header>
+    <nav>
+      <ol class="nav-list">
+<li><a class="nav-item" href="#prerequisites" data-panel="prerequisites"><span class="nav-marker"><i class="fa-solid fa-list-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-title">Prerequisites</span></span></a></li>
+<li><a class="nav-item" href="#step-0" data-panel="step-0"><span class="nav-marker"><span class="nav-num">0</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 0</span><span class="nav-title">Setup</span></span></a></li>
+<li><a class="nav-item" href="#step-1" data-panel="step-1"><span class="nav-marker"><span class="nav-num">1</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 1</span><span class="nav-title">First run</span></span></a></li>
+<li><a class="nav-item" href="#step-2" data-panel="step-2"><span class="nav-marker"><span class="nav-num">2</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 2</span><span class="nav-title">Widgets & layout</span></span></a></li>
+<li class="nav-break"><i class="fa-solid fa-mug-hot" aria-hidden="true"></i>Break 10 min</li>
+<li><a class="nav-item" href="#step-3" data-panel="step-3"><span class="nav-marker"><span class="nav-num">3</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 3</span><span class="nav-title">Model & database</span></span></a></li>
+<li><a class="nav-item" href="#step-4" data-panel="step-4"><span class="nav-marker"><span class="nav-num">4</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 4</span><span class="nav-title">Read & delete</span></span></a></li>
+<li><a class="nav-item" href="#step-5" data-panel="step-5"><span class="nav-marker"><span class="nav-num">5</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 5</span><span class="nav-title">Form & navigation</span></span></a></li>
+<li><a class="nav-item" href="#step-6" data-panel="step-6"><span class="nav-marker"><span class="nav-num">6</span><i class="fa-solid fa-check nav-check" aria-hidden="true"></i></span><span class="nav-text"><span class="nav-kicker">Step 6</span><span class="nav-title">Polish & wrap-up</span></span></a></li>
+      </ol>
+    </nav>
+  </aside>
+  <div class="overlay" id="overlay" hidden></div>
 
-  <main id="steps" class="steps">
-<section id="prerequisites">
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" type="button" aria-label="Open the contents" aria-controls="sidebar" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+      <p class="panel-title" id="panel-title">Prerequisites — install before the session</p>
+      <div class="pager">
+        <button class="nav-btn" type="button" data-dir="-1" aria-label="Previous"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i><span class="btn-label">Previous</span></button>
+        <button class="nav-btn" type="button" data-dir="1" aria-label="Next"><span class="btn-label">Next</span><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <i class="fa-solid fa-globe" aria-hidden="true"></i>
+        <a href="fr.html" hreflang="fr" lang="fr" data-lang="fr">FR</a><a href="en.html" hreflang="en" lang="en" data-lang="en" class="is-active" aria-current="true">EN</a>
+      </div>
+    </header>
+    <div class="progress" aria-hidden="true"><div class="progress-bar"></div></div>
+
+    <main class="content" id="content">
+      <div class="content-inner">
+
+<section id="prerequisites" class="panel">
 <h2>Prerequisites — install before the session</h2>
 <p>Download and install these tools <strong>before the session</strong> (large downloads: the room's Wi-Fi may be slow). Step 0 only verifies and configures these installs.</p>
 <table>
@@ -35,18 +67,18 @@
 </table>
 <h3>Check before the session</h3>
 <ul class="checklist">
-<li>Disk space: at least 10 GB free</li>
-<li>The Flutter zip is downloaded (do not extract inside <code>C:\Program Files</code> or any path with spaces)</li>
-<li>Android Studio opens and finished its first-run setup wizard</li>
-<li>VS Code opens and the Flutter extension is installed</li>
+<li><i class="fa-regular fa-square ic" aria-hidden="true"></i>Disk space: at least 10 GB free</li>
+<li><i class="fa-regular fa-square ic" aria-hidden="true"></i>The Flutter zip is downloaded (do not extract inside <code>C:\Program Files</code> or any path with spaces)</li>
+<li><i class="fa-regular fa-square ic" aria-hidden="true"></i>Android Studio opens and finished its first-run setup wizard</li>
+<li><i class="fa-regular fa-square ic" aria-hidden="true"></i>VS Code opens and the Flutter extension is installed</li>
 </ul>
 <p class="note">The app targets <strong>Android</strong> (phone or emulator): sqflite does not support Windows desktop or web.</p>
 </section>
 
-<section class="step" id="step-0">
+<section class="step panel" id="step-0">
 <h2>Step 0 — Setup</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> check that Flutter and the Android toolchain work, and get a device ready (phone or emulator).</div>
-<div class="step-duration">⏱ Duration: 30 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> check that Flutter and the Android toolchain work, and get a device ready (phone or emulator).</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 30 min</div>
 <div class="step-why"><p>Flutter compiles your Dart code into an Android app: it needs the Flutter SDK, the Android SDK (provided by Android Studio) and a device. <code>flutter doctor</code> checks all of this at once.</p></div>
 <ol class="step-instructions">
 <li>Check that <strong>Git for Windows</strong> is installed:<pre><code class="language-bash">git --version</code></pre></li>
@@ -60,8 +92,8 @@ flutter doctor</code></pre></li>
 <li>Accept the Android licenses (answer <code>y</code> to each question):<pre><code class="language-bash">flutter doctor --android-licenses</code></pre></li>
 <li>Choose <strong>one</strong> run target:<ul><li><strong>Phone (recommended, fastest):</strong> Settings → About phone → tap “Build number” 7 times to enable Developer options, then turn on USB debugging. Plug in the cable and accept the RSA prompt. If Windows doesn't see the phone, install the Google USB driver.</li><li><strong>Emulator:</strong> Android Studio → Device Manager → create a virtual device. Needs virtualization enabled in the BIOS: may be slow or unavailable on lab PCs.</li></ul>Check that the device is listed:<pre><code class="language-bash">flutter devices</code></pre></li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> <code>flutter doctor</code> shows ✓ for <strong>Flutter</strong> and <strong>Android toolchain</strong>, and <code>flutter devices</code> lists your phone or emulator. Warnings for Chrome, Visual Studio or Xcode can be ignored.</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> <code>flutter doctor</code> shows <i class='fa-solid fa-check ic-inline' aria-hidden='true'></i> for <strong>Flutter</strong> and <strong>Android toolchain</strong>, and <code>flutter devices</code> lists your phone or emulator. Warnings for Chrome, Visual Studio or Xcode can be ignored.</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-0</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-0.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -78,10 +110,10 @@ flutter doctor</code></pre></li>
 </div>
 </section>
 
-<section class="step" id="step-1">
+<section class="step panel" id="step-1">
 <h2>Step 1 — First run</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> create the project, run it on the device and try hot reload.</div>
-<div class="step-duration">⏱ Duration: 15 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> create the project, run it on the device and try hot reload.</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 15 min</div>
 <div class="step-why"><p><code>flutter create</code> generates a complete app (a counter). <strong>Hot reload</strong> injects your changed code into the running app without losing its state: this is what makes Flutter fast to develop with.</p></div>
 <ol class="step-instructions">
 <li>Open a terminal in a folder <strong>without spaces</strong> (for example <code>C:\Users\&lt;name&gt;\projects</code>), create the project and open it in VS Code:<pre><code class="language-bash">flutter create notes_app
@@ -92,8 +124,8 @@ code .</code></pre></li>
 <li>In <code>lib/main.dart</code>, find the text <code>'Flutter Demo Home Page'</code> (in <code>MyHomePage(title: ...)</code>) and replace it with <code>'My first app'</code>. Save, then press <code>r</code> in the terminal: the title changes and the counter keeps its value.</li>
 <li>Press <code>R</code> (hot restart): the app restarts and the counter goes back to 0. (<code>q</code> stops the app; leave it running for now.)</li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> the counter app on your device with your new title; after <code>r</code> the counter keeps its value, after <code>R</code> it goes back to 0.</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> the counter app on your device with your new title; after <code>r</code> the counter keeps its value, after <code>R</code> it goes back to 0.</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-1</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-1.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -106,10 +138,10 @@ code .</code></pre></li>
 </div>
 </section>
 
-<section class="step" id="step-2">
+<section class="step panel" id="step-2">
 <h2>Step 2 — Widgets & layout</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> replace the counter with a static notes list built from <code>Scaffold</code>, <code>ListView</code>, <code>Card</code> and <code>ListTile</code>.</div>
-<div class="step-duration">⏱ Duration: 25 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> replace the counter with a static notes list built from <code>Scaffold</code>, <code>ListView</code>, <code>Card</code> and <code>ListTile</code>.</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 25 min</div>
 <div class="step-why"><p>In Flutter, everything is a <strong>widget</strong>, and the screen is a tree of widgets. A <code>StatelessWidget</code> has no data that changes. <code>Scaffold</code> is the skeleton of a page (app bar, body, floating button) and <code>ListView.builder</code> only builds the rows visible on screen.</p></div>
 <ol class="step-instructions">
 <li>Replace <strong>all</strong> of <code>lib/main.dart</code> with:<p class="file-name"><code>lib/main.dart</code></p>
@@ -167,8 +199,8 @@ class NotesListScreen extends StatelessWidget {
 <li>Change one title in the <code>titles</code> list, save and press <code>r</code>: the list updates instantly.</li>
 <li>The file <code>test/widget_test.dart</code> now shows an error (it uses <code>MyApp</code>, which no longer exists). Delete this file for this session: it does not block <code>flutter run</code>.</li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> a “My Notes” app bar, three cards (<em>Buy milk</em>, <em>Prepare Flutter session</em>, <em>Call Sami</em>) and a <strong>+</strong> button at the bottom right that does nothing yet.</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> a “My Notes” app bar, three cards (<em>Buy milk</em>, <em>Prepare Flutter session</em>, <em>Call Sami</em>) and a <strong>+</strong> button at the bottom right that does nothing yet.</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-2</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-2.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -178,14 +210,13 @@ class NotesListScreen extends StatelessWidget {
 </tbody>
 </table>
 </div>
+<p class="break-note"><i class="fa-solid fa-mug-hot ic" aria-hidden="true"></i>Break — 10 min</p>
 </section>
 
-<p class="break-note">☕ Break — 10 min</p>
-
-<section class="step" id="step-3">
+<section class="step panel" id="step-3">
 <h2>Step 3 — Model & database</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> add sqflite, create the <code>Note</code> model and the <code>DatabaseHelper</code> class, then test an insert.</div>
-<div class="step-duration">⏱ Duration: 20 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> add sqflite, create the <code>Note</code> model and the <code>DatabaseHelper</code> class, then test an insert.</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 20 min</div>
 <div class="step-why"><p>SQLite is a database stored in a file on the phone; <code>sqflite</code> is the plugin that talks to it. The <code>Note</code> class converts to a <code>Map</code> (one row of the table) and back. <code>DatabaseHelper</code> is a <em>singleton</em>: one connection for the whole app. <code>onCreate</code> only runs once, when the database file is created.</p></div>
 <ol class="step-instructions">
 <li>Stop the app (<code>q</code>) and add the packages. Use <code>flutter pub add</code> (don't type versions by hand): pub picks compatible versions.<pre><code class="language-bash">flutter pub add sqflite path</code></pre></li>
@@ -291,8 +322,8 @@ import 'models/note.dart';</code></pre></li>
 <li>Run the app again from scratch (new plugin: hot reload is not enough):<pre><code class="language-bash">flutter run</code></pre></li>
 <li>Look at the console (terminal or the VS Code Debug Console). Each launch inserts a new note (id 1, 2, 3…). <strong>Keep this test for now</strong>: these notes will show up in Step 4, where <code>main.dart</code> is replaced.</li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> <code>Inserted note with id 1</code> in the console. The screen still shows the static list: that's expected, it doesn't read the database yet.</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> <code>Inserted note with id 1</code> in the console. The screen still shows the static list: that's expected, it doesn't read the database yet.</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-3</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-3.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -305,10 +336,10 @@ import 'models/note.dart';</code></pre></li>
 </div>
 </section>
 
-<section class="step" id="step-4">
+<section class="step panel" id="step-4">
 <h2>Step 4 — Read & delete</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> show the notes from SQLite and delete them with a swipe.</div>
-<div class="step-duration">⏱ Duration: 30 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> show the notes from SQLite and delete them with a swipe.</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 30 min</div>
 <div class="step-why"><p>A <code>StatefulWidget</code> keeps data that changes (<code>_notes</code>, <code>_loading</code>). <code>initState</code> runs once when the screen opens: that's where we load the notes. <code>setState</code> tells Flutter to redraw. <code>if (!mounted) return;</code> avoids using a screen that was closed during an <code>await</code>. <code>Dismissible</code> adds the swipe gesture.</p></div>
 <ol class="step-instructions">
 <li>The new list screen opens <code>AddEditNoteScreen</code>, which we write in Step 5. First create this temporary file so the code compiles:<p class="file-name"><code>lib/screens/add_edit_note_screen.dart</code></p>
@@ -450,8 +481,8 @@ class NotesApp extends StatelessWidget {
 <li>Swipe a note from right to left: it is deleted. Stop the app (<code>q</code>) and run <code>flutter run</code> again: the deleted note does not come back.</li>
 <li>Tap <strong>+</strong>: the temporary “Coming in Step 5” screen opens; the back arrow returns to the list.</li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> the “Test / Hello” notes inserted in Step 3, newest first. A swipe shows a red background with a trash icon and deletes the note. When everything is deleted: “No notes yet. Tap + to add one.”</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> the “Test / Hello” notes inserted in Step 3, newest first. A swipe shows a red background with a trash icon and deletes the note. When everything is deleted: “No notes yet. Tap + to add one.”</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-4</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-4.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -464,15 +495,15 @@ class NotesApp extends StatelessWidget {
 </tbody>
 </table>
 </div>
-<div class="step-bonus"><strong>🚀 Bonus</strong>
+<div class="step-bonus"><strong><i class="fa-solid fa-rocket ic" aria-hidden="true"></i>Bonus</strong>
 <p><strong>Search:</strong> add a search field that filters notes by title. Hint: a method in <code>DatabaseHelper</code> using <code>db.query('notes', where: 'title LIKE ?', whereArgs: ['%$query%'])</code>.</p>
 </div>
 </section>
 
-<section class="step" id="step-5">
+<section class="step panel" id="step-5">
 <h2>Step 5 — Form & navigation</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> build the add/edit screen with validation, and navigate to it with <code>Navigator.push</code>.</div>
-<div class="step-duration">⏱ Duration: 30 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> build the add/edit screen with validation, and navigate to it with <code>Navigator.push</code>.</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 30 min</div>
 <div class="step-why"><p><code>Navigator.push</code> opens a screen on top of the current one; <code>Navigator.pop(context, true)</code> closes it and returns a result, and the list reloads. <code>Form</code> + <code>GlobalKey&lt;FormState&gt;</code> validates all fields at once. A <code>TextEditingController</code> holds a field's text and must be released in <code>dispose</code>. The same screen creates (<code>note == null</code>) and edits.</p></div>
 <ol class="step-instructions">
 <li>Replace the placeholder content of <code>lib/screens/add_edit_note_screen.dart</code> with:<p class="file-name"><code>lib/screens/add_edit_note_screen.dart</code></p>
@@ -592,8 +623,8 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 <li>Stop the app (<code>q</code>) and run <code>flutter run</code> again: your notes are still there, stored in SQLite on the phone.</li>
 <li><strong>Short on time?</strong> Keep add only: edit is already in the code, just don't tap a note.</li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> adding with validation, editing an existing note, and notes that persist after restarting the app.</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> adding with validation, editing an existing note, and notes that persist after restarting the app.</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-5</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-5.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -604,15 +635,15 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 </tbody>
 </table>
 </div>
-<div class="step-bonus"><strong>🚀 Bonus</strong>
+<div class="step-bonus"><strong><i class="fa-solid fa-rocket ic" aria-hidden="true"></i>Bonus</strong>
 <p><strong>Favorites:</strong> add a <code>favorite</code> column. This changes the schema: bump <code>version</code> to 2 and add <code>onUpgrade</code> with <code>ALTER TABLE notes ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0</code>.</p>
 </div>
 </section>
 
-<section class="step" id="step-6">
+<section class="step panel" id="step-6">
 <h2>Step 6 — Polish & wrap-up</h2>
-<div class="step-goal"><strong>🎯 Goal:</strong> add a dark theme, undo after delete and the date, then wrap up.</div>
-<div class="step-duration">⏱ Duration: 20 min</div>
+<div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Goal:</strong> add a dark theme, undo after delete and the date, then wrap up.</div>
+<div class="step-duration"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 20 min</div>
 <div class="step-why"><p>These finishing touches are the first thing to drop if time runs short. <code>ThemeMode.system</code> follows the phone's light/dark setting; a <code>SnackBar</code> is a short message at the bottom of the screen, here with an “Undo” action.</p></div>
 <ol class="step-instructions">
 <li><strong>Dark theme:</strong> in <code>lib/main.dart</code>, add these lines inside <code>MaterialApp</code>, right after <code>theme: ...,</code>. Save, press <code>r</code>, then switch the phone to dark mode.<pre><code class="language-dart">      darkTheme: ThemeData(
@@ -643,8 +674,8 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 <li><strong>Wrap-up:</strong> you used widgets and layout, <code>setState</code>, a SQLite database (create, read, update, delete) and navigation between screens.</li>
 <li><strong>What's next?</strong> Firebase is take-home, for a separate session (it needs Node and a Google account): follow the <a href="https://firebase.google.com/docs/flutter/setup">official FlutterFire setup</a>. Don't do it during this session.</li>
 </ol>
-<div class="step-result"><strong>✅ You should see…</strong> the app following the phone's dark mode, and after a swipe a “Deleted …” message whose <strong>Undo</strong> button brings the note back.</div>
-<div class="step-stuck"><strong>🛟 If stuck</strong>
+<div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>You should see…</strong> the app following the phone's dark mode, and after a swipe a “Deleted …” message whose <strong>Undo</strong> button brings the note back.</div>
+<div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>If stuck</strong>
 <p><strong>Checkpoint:</strong> tag <code>step-6</code>. Download <code>https://github.com/&lt;user&gt;/flutter-notes-solution/archive/refs/tags/step-6.zip</code>, unzip it into a folder without spaces, then run <code>flutter pub get</code> and <code>flutter run</code>.</p>
 <table>
 <thead><tr><th>Error / symptom</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -654,15 +685,17 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 </tbody>
 </table>
 </div>
-<div class="step-bonus"><strong>🚀 Bonus</strong>
+<div class="step-bonus"><strong><i class="fa-solid fa-rocket ic" aria-hidden="true"></i>Bonus</strong>
 <ul><li><strong>Sort:</strong> offer sorting by date or by title (hint: <code>orderBy: 'title'</code>).</li><li>If not done yet: search (Step 4) and favorites (Step 5).</li><li><strong>Firebase</strong>, take-home (see above).</li></ul>
 </div>
 </section>
-  </main>
 
-  <footer class="site-footer">
-    <p>Code, commands and code comments are in English in both versions.</p>
-  </footer>
+      </div>
+      <footer class="site-footer">
+        <p>Code, commands and code comments are in English in both versions.</p>
+      </footer>
+    </main>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
   <script src="app.js"></script>
