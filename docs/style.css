@@ -1,0 +1,181 @@
+/* Shared styles for the codelab pages: readable on phone and projector. */
+
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --text: #1b1f24;
+  --muted: #5a6370;
+  --border: #d9dee5;
+  --accent: #0b6bcb;
+  --accent-text: #ffffff;
+  --code-bg: #0f172a;
+  --code-text: #e2e8f0;
+  --stuck-bg: #fff4e5;
+  --stuck-border: #f0a84a;
+  --bonus-bg: #eef7ee;
+  --bonus-border: #5aa85a;
+  --done: #2e8b57;
+  --radius: 12px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1116;
+    --surface: #171b22;
+    --text: #e6e9ee;
+    --muted: #9aa4b2;
+    --border: #2b323d;
+    --accent: #5aa9ff;
+    --accent-text: #0e1116;
+    --code-bg: #05080f;
+    --code-text: #e2e8f0;
+    --stuck-bg: #2a2114;
+    --stuck-border: #c98a33;
+    --bonus-bg: #15241a;
+    --bonus-border: #4d9a5d;
+    --done: #5cc98a;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 18px; }
+@media (min-width: 1200px) { html { font-size: 20px; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+a { color: var(--accent); }
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.6rem 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.home-link { font-weight: 700; text-decoration: none; color: var(--text); }
+.lang-switch {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.progress { height: 4px; background: var(--border); }
+.progress-bar { height: 100%; width: 0; background: var(--done); transition: width 0.2s; }
+
+/* Steps */
+.steps { max-width: 900px; margin: 0 auto; padding: 1.5rem 16px 3rem; }
+
+.step, #prerequisites {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.25rem 1rem;
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 5rem;
+}
+.step h2, #prerequisites h2 { margin-top: 0; }
+.step.is-done { border-left: 6px solid var(--done); }
+
+.step-duration { color: var(--muted); font-weight: 600; }
+.step-instructions li { margin-bottom: 0.75rem; }
+.step-result { border-left: 4px solid var(--accent); padding-left: 0.75rem; }
+.step-stuck, .step-bonus {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  border: 1px solid;
+}
+.step-stuck { background: var(--stuck-bg); border-color: var(--stuck-border); }
+.step-bonus { background: var(--bonus-bg); border-color: var(--bonus-border); }
+
+.step-done-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.step-done-toggle input { width: 1.2rem; height: 1.2rem; }
+
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+
+/* Code */
+code { font-family: Consolas, "Cascadia Code", "Fira Code", monospace; font-size: 0.9em; }
+:not(pre) > code {
+  background: var(--border);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.code-wrap { position: relative; margin: 0.75rem 0; }
+pre {
+  margin: 0;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1rem;
+  padding-top: 2.4rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+pre code { background: none; padding: 0; font-size: 0.85rem; }
+.copy-btn {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  font: inherit;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+.copy-btn.copied { background: var(--done); }
+
+/* Footer */
+.site-footer { text-align: center; color: var(--muted); padding: 1rem 16px 2rem; font-size: 0.85rem; }
+
+/* Language chooser */
+.chooser { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.chooser-main { text-align: center; padding: 2rem 16px; }
+.chooser-sub { color: var(--muted); }
+.chooser-buttons { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 2rem; }
+.lang-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 12rem;
+  height: 9rem;
+  font-size: 3rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.lang-btn span { font-size: 1rem; font-weight: 500; }
+.lang-btn:hover, .lang-btn:focus-visible { filter: brightness(1.1); }
