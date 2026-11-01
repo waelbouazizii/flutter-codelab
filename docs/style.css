@@ -30,6 +30,12 @@
   --bonus-bg: #e8f8fe;
   --bonus-border: #13b9fd;
   --done: #1e8e5a;
+  --wrong: #c62828;
+  --right-bg: #e7f6ee;
+  --right-text: #145c3b;
+  --wrong-bg: #fdecec;
+  --wrong-text: #8e1c1c;
+  --quiz-bg: #f8fbfe;
   --focus: #0175c2;
   --radius: 8px;
   --shadow: 0 1px 2px rgba(4, 43, 89, 0.06), 0 2px 6px rgba(4, 43, 89, 0.08);
@@ -62,6 +68,12 @@
     --bonus-bg: #0e2a3a;
     --bonus-border: #13b9fd;
     --done: #5cc98a;
+    --wrong: #ef7a7a;
+    --right-bg: #12301f;
+    --right-text: #b9ecd0;
+    --wrong-bg: #361719;
+    --wrong-text: #f6c4c4;
+    --quiz-bg: #0f1c29;
     --focus: #4fc3f7;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.3);
     color-scheme: dark;
@@ -368,6 +380,89 @@ pre code[class*="language-"] {
 .copy-btn:hover { background: rgba(19, 185, 253, 0.32); }
 .copy-btn:focus-visible { outline-color: var(--flutter-sky); }
 .copy-btn.copied { background: #1e8e5a; border-color: #1e8e5a; color: #ffffff; }
+
+/* Quiz (filled by quiz.js from quizzes.json) */
+.quiz:empty { display: none; }
+.quiz {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--quiz-bg);
+}
+.quiz-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--accent-strong);
+}
+.quiz-title::before {
+  content: "\f059"; /* Font Awesome circle-question */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-right: 0.45em;
+  color: var(--accent);
+}
+.quiz-nick {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  min-height: 44px;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.quiz-nick:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+.quiz-q + .quiz-q {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border);
+}
+.quiz-text { margin: 0 0 0.6rem; font-weight: 500; }
+.quiz-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  margin: 0 0 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.quiz-opt:disabled { cursor: default; }
+.quiz-opt:disabled:not(.right):not(.wrong) { opacity: 0.6; }
+.quiz-opt.right,
+.quiz-opt.wrong { border-width: 2px; font-weight: 500; }
+.quiz-opt.right { border-color: var(--done); background: var(--right-bg); color: var(--right-text); }
+.quiz-opt.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong-text); }
+/* Symbol as well as color: check for the right answer, cross for a wrong choice. */
+.quiz-opt.right::before,
+.quiz-opt.wrong::before {
+  flex: none;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  width: 1.2em;
+  text-align: center;
+}
+.quiz-opt.right::before { content: "\f00c"; color: var(--done); }
+.quiz-opt.wrong::before { content: "\f00d"; color: var(--wrong); }
+.quiz-feedback { margin: 0.25rem 0 0; font-size: 0.92rem; color: var(--muted); }
+.quiz-feedback:empty { display: none; }
 
 /* Footer */
 .site-footer { text-align: center; color: var(--muted); padding: 0 16px 2rem; font-size: 0.85rem; }

@@ -1,0 +1,671 @@
+{
+  "version": 1,
+  "note": "3 single-choice questions per step (steps 0 to 6), 21 in total. Prose is bilingual (fr/en). Code, paths and commands inside options are identical in both languages. 'answer' is the 0-based index of the correct option. Max 4 options per question (the Firestore rules accept selected 0 to 3).",
+  "steps": [
+    {
+      "step": 0,
+      "questions": [
+        {
+          "id": "s0-q1",
+          "q": {
+            "fr": "Dans quel dossier faut-il éviter d’extraire le SDK Flutter ?",
+            "en": "Which folder should you avoid when extracting the Flutter SDK?"
+          },
+          "options": [
+            {
+              "fr": "C:\\Users\\<name>\\develop",
+              "en": "C:\\Users\\<name>\\develop"
+            },
+            {
+              "fr": "C:\\Program Files\\flutter",
+              "en": "C:\\Program Files\\flutter"
+            },
+            {
+              "fr": "D:\\dev\\flutter",
+              "en": "D:\\dev\\flutter"
+            },
+            {
+              "fr": "C:\\tools\\flutter",
+              "en": "C:\\tools\\flutter"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "Évitez C:\\Program Files : ce dossier demande des droits administrateur. Choisissez aussi un chemin sans espaces ni caractères spéciaux.",
+            "en": "Avoid C:\\Program Files: it needs administrator rights. Also pick a path without spaces or special characters."
+          }
+        },
+        {
+          "id": "s0-q2",
+          "q": {
+            "fr": "Vous venez de modifier la variable Path. Que faut-il faire avant de lancer `flutter` ?",
+            "en": "You just edited the Path variable. What must you do before running `flutter`?"
+          },
+          "options": [
+            {
+              "fr": "Rien : c’est appliqué immédiatement",
+              "en": "Nothing: it applies immediately"
+            },
+            {
+              "fr": "Fermer puis rouvrir tous les terminaux et l’éditeur",
+              "en": "Close and reopen all terminals and the editor"
+            },
+            {
+              "fr": "Réinstaller Android Studio",
+              "en": "Reinstall Android Studio"
+            },
+            {
+              "fr": "Lancer `flutter upgrade`",
+              "en": "Run `flutter upgrade`"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "Les programmes déjà ouverts gardent l’ancien Path. Il faut rouvrir les terminaux et l’éditeur pour que `flutter` soit reconnu.",
+            "en": "Programs that are already open keep the old Path. Reopen terminals and the editor so `flutter` is recognized."
+          }
+        },
+        {
+          "id": "s0-q3",
+          "q": {
+            "fr": "Que faut-il voir dans `flutter doctor` pour ce labo ?",
+            "en": "What do you need to see in `flutter doctor` for this lab?"
+          },
+          "options": [
+            {
+              "fr": "Des coches pour Flutter et pour la chaîne d’outils Android",
+              "en": "Check marks for Flutter and the Android toolchain"
+            },
+            {
+              "fr": "Des coches pour tout, y compris Xcode et Visual Studio",
+              "en": "Check marks for everything, including Xcode and Visual Studio"
+            },
+            {
+              "fr": "Une coche pour Chrome uniquement",
+              "en": "A check mark for Chrome only"
+            },
+            {
+              "fr": "Aucun avertissement du tout",
+              "en": "No warnings at all"
+            }
+          ],
+          "answer": 0,
+          "explain": {
+            "fr": "Il faut des coches pour Flutter et pour les plateformes visées, ici Android. Les avertissements pour Chrome, Visual Studio ou Xcode peuvent être ignorés.",
+            "en": "You need check marks for Flutter and the platforms you target, here Android. Warnings about Chrome, Visual Studio or Xcode can be ignored."
+          }
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "questions": [
+        {
+          "id": "s1-q1",
+          "q": {
+            "fr": "Quelle commande crée un nouveau projet Flutter ?",
+            "en": "Which command creates a new Flutter project?"
+          },
+          "options": [
+            {
+              "fr": "`flutter new notes_app`",
+              "en": "`flutter new notes_app`"
+            },
+            {
+              "fr": "`flutter create notes_app`",
+              "en": "`flutter create notes_app`"
+            },
+            {
+              "fr": "`dart init notes_app`",
+              "en": "`dart init notes_app`"
+            },
+            {
+              "fr": "`flutter start notes_app`",
+              "en": "`flutter start notes_app`"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "`flutter create` génère la structure du projet, avec l’application compteur par défaut.",
+            "en": "`flutter create` generates the project structure with the default counter app."
+          }
+        },
+        {
+          "id": "s1-q2",
+          "q": {
+            "fr": "Que fait le hot reload ?",
+            "en": "What does hot reload do?"
+          },
+          "options": [
+            {
+              "fr": "Il réinstalle l’application depuis zéro",
+              "en": "It reinstalls the app from scratch"
+            },
+            {
+              "fr": "Il applique les changements de code à l’application en cours, sans la relancer",
+              "en": "It applies code changes to the running app without restarting it"
+            },
+            {
+              "fr": "Il construit un nouvel APK",
+              "en": "It builds a new APK"
+            },
+            {
+              "fr": "Il ferme et rouvre le terminal",
+              "en": "It closes and reopens the terminal"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "Le hot reload injecte le code modifié dans l’application qui tourne : le résultat apparaît en un instant.",
+            "en": "Hot reload injects the changed code into the running app, so the result shows up almost instantly."
+          }
+        },
+        {
+          "id": "s1-q3",
+          "q": {
+            "fr": "Pendant `flutter run`, quelle touche du terminal déclenche un hot reload ?",
+            "en": "During `flutter run`, which terminal key triggers a hot reload?"
+          },
+          "options": [
+            {
+              "fr": "`r`",
+              "en": "`r`"
+            },
+            {
+              "fr": "`R`",
+              "en": "`R`"
+            },
+            {
+              "fr": "`q`",
+              "en": "`q`"
+            },
+            {
+              "fr": "`c`",
+              "en": "`c`"
+            }
+          ],
+          "answer": 0,
+          "explain": {
+            "fr": "`r` = hot reload, `R` = hot restart (repart de zéro), `q` = quitter.",
+            "en": "`r` = hot reload, `R` = hot restart (starts fresh), `q` = quit."
+          }
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "questions": [
+        {
+          "id": "s2-q1",
+          "q": {
+            "fr": "Quel widget donne à un écran sa structure de base (barre d’application, corps, bouton flottant) ?",
+            "en": "Which widget gives a screen its basic structure (app bar, body, floating button)?"
+          },
+          "options": [
+            {
+              "fr": "`Scaffold`",
+              "en": "`Scaffold`"
+            },
+            {
+              "fr": "`Container`",
+              "en": "`Container`"
+            },
+            {
+              "fr": "`Column`",
+              "en": "`Column`"
+            },
+            {
+              "fr": "`Text`",
+              "en": "`Text`"
+            }
+          ],
+          "answer": 0,
+          "explain": {
+            "fr": "`Scaffold` fournit l’ossature d’un écran Material : `appBar`, `body`, `floatingActionButton`.",
+            "en": "`Scaffold` provides the skeleton of a Material screen: `appBar`, `body`, `floatingActionButton`."
+          }
+        },
+        {
+          "id": "s2-q2",
+          "q": {
+            "fr": "Quel widget construit les éléments d’une longue liste à la demande, à partir d’un index ?",
+            "en": "Which widget builds the items of a long list on demand, from an index?"
+          },
+          "options": [
+            {
+              "fr": "`Column`",
+              "en": "`Column`"
+            },
+            {
+              "fr": "`ListView.builder`",
+              "en": "`ListView.builder`"
+            },
+            {
+              "fr": "`Row`",
+              "en": "`Row`"
+            },
+            {
+              "fr": "`Stack`",
+              "en": "`Stack`"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "`ListView.builder` ne construit que les éléments visibles grâce à `itemBuilder` et `itemCount`.",
+            "en": "`ListView.builder` only builds the visible items, using `itemBuilder` and `itemCount`."
+          }
+        },
+        {
+          "id": "s2-q3",
+          "q": {
+            "fr": "Pourquoi `NotesListScreen` est-il un `StatelessWidget` à l’étape 2 ?",
+            "en": "Why is `NotesListScreen` a `StatelessWidget` in Step 2?"
+          },
+          "options": [
+            {
+              "fr": "Parce qu’il utilise une base de données",
+              "en": "Because it uses a database"
+            },
+            {
+              "fr": "Parce que les données sont écrites en dur et ne changent pas",
+              "en": "Because the data is hard-coded and never changes"
+            },
+            {
+              "fr": "Parce que `ListView` l’exige",
+              "en": "Because `ListView` requires it"
+            },
+            {
+              "fr": "Parce qu’il n’a pas de méthode `build`",
+              "en": "Because it has no `build` method"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "Sans état qui évolue, un `StatelessWidget` suffit. Il deviendra `StatefulWidget` à l’étape 4, quand la liste viendra de SQLite.",
+            "en": "With no changing state, a `StatelessWidget` is enough. It becomes a `StatefulWidget` in Step 4, when the list comes from SQLite."
+          }
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "questions": [
+        {
+          "id": "s3-q1",
+          "q": {
+            "fr": "Que fait `onCreate` dans `openDatabase` ?",
+            "en": "What does `onCreate` do in `openDatabase`?"
+          },
+          "options": [
+            {
+              "fr": "Il s’exécute à chaque démarrage de l’application",
+              "en": "It runs every time the app starts"
+            },
+            {
+              "fr": "Il s’exécute une seule fois, à la création du fichier de base, pour créer les tables",
+              "en": "It runs once, when the database file is created, to create the tables"
+            },
+            {
+              "fr": "Il supprime l’ancienne base",
+              "en": "It deletes the old database"
+            },
+            {
+              "fr": "Il se connecte à un serveur",
+              "en": "It connects to a server"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "`onCreate` n’est appelé que lorsque la base n’existe pas encore : c’est l’endroit pour `CREATE TABLE`.",
+            "en": "`onCreate` is only called when the database does not exist yet: that is where `CREATE TABLE` goes."
+          }
+        },
+        {
+          "id": "s3-q2",
+          "q": {
+            "fr": "Pourquoi `insert` retire-t-il la clé `id` de la map avant d’écrire ?",
+            "en": "Why does `insert` remove the `id` key from the map before writing?"
+          },
+          "options": [
+            {
+              "fr": "Parce que SQLite interdit les colonnes nommées `id`",
+              "en": "Because SQLite forbids columns named `id`"
+            },
+            {
+              "fr": "Pour laisser SQLite générer l’identifiant automatiquement",
+              "en": "To let SQLite generate the id automatically"
+            },
+            {
+              "fr": "Pour économiser de la place",
+              "en": "To save space"
+            },
+            {
+              "fr": "Parce que `id` est une chaîne de caractères",
+              "en": "Because `id` is a string"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "La colonne est déclarée `PRIMARY KEY AUTOINCREMENT` : SQLite choisit l’identifiant, et `insert` le renvoie.",
+            "en": "The column is declared `PRIMARY KEY AUTOINCREMENT`: SQLite picks the id, and `insert` returns it."
+          }
+        },
+        {
+          "id": "s3-q3",
+          "q": {
+            "fr": "Comment un `DateTime` est-il stocké dans notre table ?",
+            "en": "How is a `DateTime` stored in our table?"
+          },
+          "options": [
+            {
+              "fr": "Dans un type natif DateTime",
+              "en": "In a native DateTime type"
+            },
+            {
+              "fr": "Dans une colonne TEXT, sous forme de chaîne ISO 8601",
+              "en": "In a TEXT column, as an ISO 8601 string"
+            },
+            {
+              "fr": "Dans une colonne BLOB",
+              "en": "In a BLOB column"
+            },
+            {
+              "fr": "Dans une colonne BOOLEAN",
+              "en": "In a BOOLEAN column"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "SQLite n’a pas de type date : `toIso8601String()` donne un texte, que `DateTime.parse` relit.",
+            "en": "SQLite has no date type: `toIso8601String()` produces text, which `DateTime.parse` reads back."
+          }
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "questions": [
+        {
+          "id": "s4-q1",
+          "q": {
+            "fr": "Pourquoi écrire `if (!mounted) return;` après un `await` ?",
+            "en": "Why write `if (!mounted) return;` after an `await`?"
+          },
+          "options": [
+            {
+              "fr": "Pour accélérer la base de données",
+              "en": "To speed up the database"
+            },
+            {
+              "fr": "Parce que l’écran a pu être retiré pendant l’attente, et `setState` provoquerait une erreur",
+              "en": "Because the screen may have been removed while waiting, and `setState` would then throw an error"
+            },
+            {
+              "fr": "Pour fermer la base de données",
+              "en": "To close the database"
+            },
+            {
+              "fr": "Pour recharger la liste",
+              "en": "To reload the list"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "Après une attente asynchrone, le widget peut ne plus être dans l’arbre. `mounted` indique si l’on peut encore utiliser `setState` ou `context`.",
+            "en": "After an async wait the widget may no longer be in the tree. `mounted` tells you whether you can still use `setState` or `context`."
+          }
+        },
+        {
+          "id": "s4-q2",
+          "q": {
+            "fr": "Dans `_deleteNote`, pourquoi appeler `_loadNotes()` après la suppression en base ?",
+            "en": "In `_deleteNote`, why call `_loadNotes()` after deleting from the database?"
+          },
+          "options": [
+            {
+              "fr": "Pour fermer la base de données",
+              "en": "To close the database"
+            },
+            {
+              "fr": "Pour relire la table et retirer la note supprimée de la liste affichée",
+              "en": "To re-read the table and remove the deleted note from the displayed list"
+            },
+            {
+              "fr": "Pour recréer la table `notes`",
+              "en": "To recreate the `notes` table"
+            },
+            {
+              "fr": "Pour changer l’`id` des autres notes",
+              "en": "To change the `id` of the other notes"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "La liste affichée est une copie en mémoire. Sans rechargement, le `Dismissible` glissé resterait dans l’arbre et Flutter lèverait une erreur.",
+            "en": "The displayed list is an in-memory copy. Without a reload, the swiped `Dismissible` would stay in the tree and Flutter would throw an error."
+          }
+        },
+        {
+          "id": "s4-q3",
+          "q": {
+            "fr": "De quoi chaque `Dismissible` a-t-il besoin pour fonctionner correctement ?",
+            "en": "What does each `Dismissible` need to work correctly?"
+          },
+          "options": [
+            {
+              "fr": "D’une `key` unique, par exemple `ValueKey(note.id)`",
+              "en": "A unique `key`, for example `ValueKey(note.id)`"
+            },
+            {
+              "fr": "D’un `Scaffold`",
+              "en": "A `Scaffold`"
+            },
+            {
+              "fr": "D’un `TextEditingController`",
+              "en": "A `TextEditingController`"
+            },
+            {
+              "fr": "D’un `Navigator`",
+              "en": "A `Navigator`"
+            }
+          ],
+          "answer": 0,
+          "explain": {
+            "fr": "La clé permet à Flutter de savoir quel élément de la liste a été glissé, même quand la liste change.",
+            "en": "The key lets Flutter know which list item was swiped, even when the list changes."
+          }
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "questions": [
+        {
+          "id": "s5-q1",
+          "q": {
+            "fr": "Que fait `Navigator.pop(context, true)` ?",
+            "en": "What does `Navigator.pop(context, true)` do?"
+          },
+          "options": [
+            {
+              "fr": "Il ferme l’application",
+              "en": "It closes the app"
+            },
+            {
+              "fr": "Il revient à l’écran précédent et renvoie `true` comme résultat du `Navigator.push` attendu",
+              "en": "It returns to the previous screen and gives `true` as the result of the awaited `Navigator.push`"
+            },
+            {
+              "fr": "Il ouvre un nouvel écran",
+              "en": "It opens a new screen"
+            },
+            {
+              "fr": "Il enregistre la note en base",
+              "en": "It saves the note to the database"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "L’écran de liste attend ce résultat avec `await Navigator.push`, et recharge les notes quand il vaut `true`.",
+            "en": "The list screen awaits that result with `await Navigator.push`, and reloads the notes when it is `true`."
+          }
+        },
+        {
+          "id": "s5-q2",
+          "q": {
+            "fr": "Que doit renvoyer le `validator` d’un `TextFormField` lorsque la saisie est valide ?",
+            "en": "What must the `validator` of a `TextFormField` return when the input is valid?"
+          },
+          "options": [
+            {
+              "fr": "`true`",
+              "en": "`true`"
+            },
+            {
+              "fr": "`null`",
+              "en": "`null`"
+            },
+            {
+              "fr": "`'OK'`",
+              "en": "`'OK'`"
+            },
+            {
+              "fr": "`0`",
+              "en": "`0`"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "`null` signifie « pas d’erreur ». Toute chaîne renvoyée est affichée comme message d’erreur.",
+            "en": "`null` means “no error”. Any string returned is shown as the error message."
+          }
+        },
+        {
+          "id": "s5-q3",
+          "q": {
+            "fr": "Pourquoi appeler `dispose()` sur les `TextEditingController` ?",
+            "en": "Why call `dispose()` on the `TextEditingController`s?"
+          },
+          "options": [
+            {
+              "fr": "Pour libérer leurs ressources quand l’écran est détruit",
+              "en": "To release their resources when the screen is destroyed"
+            },
+            {
+              "fr": "Pour vider la base de données",
+              "en": "To empty the database"
+            },
+            {
+              "fr": "Pour valider le formulaire",
+              "en": "To validate the form"
+            },
+            {
+              "fr": "Pour changer le thème",
+              "en": "To change the theme"
+            }
+          ],
+          "answer": 0,
+          "explain": {
+            "fr": "Un contrôleur non libéré continue d’occuper de la mémoire. On le libère dans `dispose()`.",
+            "en": "A controller that is not released keeps using memory. Release it in `dispose()`."
+          }
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "questions": [
+        {
+          "id": "s6-q1",
+          "q": {
+            "fr": "Quelles propriétés de `MaterialApp` activent un thème sombre qui suit le réglage du téléphone ?",
+            "en": "Which `MaterialApp` properties enable a dark theme that follows the phone setting?"
+          },
+          "options": [
+            {
+              "fr": "`darkTheme` et `themeMode: ThemeMode.system`",
+              "en": "`darkTheme` and `themeMode: ThemeMode.system`"
+            },
+            {
+              "fr": "`theme` seulement",
+              "en": "`theme` only"
+            },
+            {
+              "fr": "`home` et `title`",
+              "en": "`home` and `title`"
+            },
+            {
+              "fr": "`debugShowCheckedModeBanner`",
+              "en": "`debugShowCheckedModeBanner`"
+            }
+          ],
+          "answer": 0,
+          "explain": {
+            "fr": "`darkTheme` définit le thème sombre, et `themeMode: ThemeMode.system` choisit selon le réglage du système.",
+            "en": "`darkTheme` defines the dark theme, and `themeMode: ThemeMode.system` picks based on the system setting."
+          }
+        },
+        {
+          "id": "s6-q2",
+          "q": {
+            "fr": "Pour annuler la suppression d’une note (Undo), que faut-il faire ?",
+            "en": "To undo a note deletion, what do you need to do?"
+          },
+          "options": [
+            {
+              "fr": "Appeler `update` sur la note",
+              "en": "Call `update` on the note"
+            },
+            {
+              "fr": "Réinsérer la note en base, puis recharger la liste",
+              "en": "Insert the note into the database again, then reload the list"
+            },
+            {
+              "fr": "Appeler seulement `setState`",
+              "en": "Call `setState` only"
+            },
+            {
+              "fr": "Redémarrer l’application",
+              "en": "Restart the app"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "La ligne a été supprimée de la table : il faut la réinsérer avec `insert`, puis recharger.",
+            "en": "The row was deleted from the table: you must insert it again with `insert`, then reload."
+          }
+        },
+        {
+          "id": "s6-q3",
+          "q": {
+            "fr": "Quel changement exige d’augmenter la `version` de la base et d’écrire un `onUpgrade` ?",
+            "en": "Which change requires bumping the database `version` and writing an `onUpgrade`?"
+          },
+          "options": [
+            {
+              "fr": "Changer la couleur d’un texte",
+              "en": "Changing a text color"
+            },
+            {
+              "fr": "Ajouter une colonne à la table `notes`",
+              "en": "Adding a column to the `notes` table"
+            },
+            {
+              "fr": "Changer le titre de l’application",
+              "en": "Changing the app title"
+            },
+            {
+              "fr": "Ajouter une `SnackBar`",
+              "en": "Adding a `SnackBar`"
+            }
+          ],
+          "answer": 1,
+          "explain": {
+            "fr": "`onCreate` ne s’exécute que pour une base neuve. Pour modifier le schéma d’une base existante, on augmente `version` et on écrit `onUpgrade` (par exemple `ALTER TABLE`).",
+            "en": "`onCreate` only runs for a new database. To change the schema of an existing one, bump `version` and write `onUpgrade` (for example `ALTER TABLE`)."
+          }
+        }
+      ]
+    }
+  ]
+}

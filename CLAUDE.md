@@ -37,6 +37,15 @@ The prerequisites card is `<section id="prerequisites" class="panel">`. Each ste
 | Expected result | `<div class="step-result">` |
 | If stuck (checkpoint tag + common errors) | `<div class="step-stuck">` |
 | Bonus (optional) | `<div class="step-bonus">` |
+| Quiz (required, last in the card) | `<div class="quiz" data-step="N"></div>` (empty) |
+
+## Quizzes
+- Spec: `flutter-quiz-spec.md`. 3 questions per step (steps 0 to 6), ids `sN-q1` … `sN-q3`.
+- Quiz text lives ONLY in `docs/quizzes.json` (FR + EN), never in the HTML. Each step card ends with an empty `<div class="quiz" data-step="N"></div>`; the prerequisites card has none.
+- `docs/quiz.js` (ES module, loaded with `<script type="module" src="quiz.js">`) fills the divs and reads `<html lang>` (`fr` / `en`).
+- Code inside backticks in an option must be identical in `fr` and `en`. When code in `flutter-conventions.md` changes, re-check that `quizzes.json` still matches it.
+- `docs/firebase-config.js` is published on purpose (not secret; access is controlled by `firestore.rules`). Do not gitignore it. Use a new `SESSION_ID` per session.
+- `docs/dashboard.html` is for the instructor only: never link to it from `fr.html`, `en.html` or `index.html`.
 
 ## Checks
 - Run `python scripts/check.py` before every commit. It must exit 0.

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz dashboard</title>
+<style>
+  :root { --bg:#fff; --fg:#1b1f24; --muted:#5b6570; --card:#f4f6f8; --line:#d8dee4; --good:#1a7f4b; --bad:#c0392b; --accent:#0b6bcb; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12161b; --fg:#e8ecf0; --muted:#9aa5b1; --card:#1b2129; --line:#2e3742; --good:#4cc38a; --bad:#ff7b6b; --accent:#5aa9ff; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--fg); padding:16px; max-width:1100px; margin-inline:auto; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  .muted { color:var(--muted); }
+  .bar { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:12px 0; }
+  button, input { font:inherit; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); }
+  button { cursor:pointer; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:16px 0; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; }
+  .kpi b { display:block; font-size:2rem; line-height:1.1; }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin:12px 0; }
+  .step h2 { font-size:1.1rem; margin:0 0 8px; }
+  .q { margin:10px 0; }
+  .qhead { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .meter { height:10px; background:var(--line); border-radius:6px; overflow:hidden; margin:4px 0; }
+  .meter > i { display:block; height:100%; background:var(--good); }
+  .opts { display:grid; gap:2px; font-size:.9rem; }
+  .opt { display:flex; align-items:center; gap:8px; }
+  .opt .o { flex:1; height:8px; background:var(--line); border-radius:4px; overflow:hidden; }
+  .opt .o > i { display:block; height:100%; background:var(--muted); }
+  .opt.right .o > i { background:var(--good); }
+  .opt .n { width:4.5em; text-align:right; font-variant-numeric:tabular-nums; }
+  .opt .t { width:3.5em; }
+  #gate { display:none; }
+  #app { display:none; }
+  #err { color:var(--bad); }
+  .sig { display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--muted); }
+  .sig.live { background:var(--good); }
+</style>
+</head>
+<body>
+<h1>Quiz dashboard <span class="sig" id="sig" title="live"></span></h1>
+<p class="muted">Live answers from students. Visible to the instructor account only.</p>
+
+<div id="gate">
+  <button id="login">Sign in with Google</button>
+</div>
+<p id="err"></p>
+
+<div id="app">
+  <div class="bar">
+    <label>Session <input id="session" size="22"></label>
+    <button id="apply">Apply</button>
+    <button id="logout">Sign out</button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="k-students">0</b><span class="muted">students</span></div>
+    <div class="kpi"><b id="k-answers">0</b><span class="muted">answers</span></div>
+    <div class="kpi"><b id="k-correct">–</b><span class="muted">% correct overall</span></div>
+    <div class="kpi"><b id="k-hard">–</b><span class="muted">hardest question</span></div>
+  </div>
+  <div id="steps"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { firebaseConfig, SESSION_ID } from "./firebase-config.js";
+
+const $ = (id) => document.getElementById(id);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const quizzes = await (await fetch("quizzes.json")).json();
+const byId = new Map();
+for (const s of quizzes.steps) for (const q of s.questions) byId.set(q.id, { ...q, step: s.step });
+
+let unsub = null;
+$("session").value = SESSION_ID;
+
+onAuthStateChanged(auth, (user) => {
+  $("gate").style.display = user ? "none" : "block";
+  $("app").style.display = user ? "block" : "none";
+  if (user) listen(); else if (unsub) { unsub(); unsub = null; }
+});
+$("login").onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch((e) => ($("err").textContent = e.message));
+$("logout").onclick = () => signOut(auth);
+$("apply").onclick = () => listen();
+
+function listen() {
+  if (unsub) unsub();
+  $("err").textContent = "";
+  const q = query(collection(db, "answers"), where("session", "==", $("session").value.trim()));
+  unsub = onSnapshot(q, (snap) => {
+    $("sig").classList.add("live");
+    render(snap.docs.map((d) => d.data()));
+  }, (e) => {
+    $("sig").classList.remove("live");
+    $("err").textContent = e.code === "permission-denied" ? "Access denied: this Google account is not the instructor account in firestore.rules." : e.message;
+  });
+}
+
+function render(rows) {
+  const students = new Set(rows.map((r) => r.studentId));
+  const stats = new Map();
+  for (const [id, q] of byId) stats.set(id, { q, counts: q.options.map(() => 0), total: 0 });
+  let correct = 0, counted = 0;
+  for (const r of rows) {
+    const s = stats.get(r.quizId);
+    if (!s || r.selected >= s.counts.length) continue;
+    s.counts[r.selected]++; s.total++; counted++;
+    if (r.selected === s.q.answer) correct++;
+  }
+  $("k-students").textContent = students.size;
+  $("k-answers").textContent = counted;
+  $("k-correct").textContent = counted ? Math.round((100 * correct) / counted) : "–";
+  let hard = null;
+  for (const s of stats.values()) {
+    if (s.total < 3) continue;
+    const p = s.counts[s.q.answer] / s.total;
+    if (!hard || p < hard.p) hard = { id: s.q.id, p };
+  }
+  $("k-hard").textContent = hard ? `${hard.id} (${Math.round(hard.p * 100)}%)` : "–";
+
+  const root = $("steps");
+  root.replaceChildren();
+  for (const grp of quizzes.steps) {
+    const sec = document.createElement("section");
+    sec.className = "step";
+    const h = document.createElement("h2");
+    const qs = grp.questions.map((q) => stats.get(q.id));
+    const tot = qs.reduce((a, s) => a + s.total, 0);
+    const ok = qs.reduce((a, s) => a + s.counts[s.q.answer], 0);
+    h.textContent = `Step ${grp.step} — ${tot ? Math.round((100 * ok) / tot) + "% correct" : "no answers yet"} (${tot} answers)`;
+    sec.append(h);
+    for (const s of qs) {
+      const pct = s.total ? Math.round((100 * s.counts[s.q.answer]) / s.total) : 0;
+      const d = document.createElement("div");
+      d.className = "q";
+      const head = document.createElement("div");
+      head.className = "qhead";
+      const t = document.createElement("span");
+      t.textContent = `${s.q.id}: ${s.q.q.en}`;
+      const p = document.createElement("b");
+      p.textContent = s.total ? `${pct}% (${s.total})` : "–";
+      head.append(t, p);
+      const m = document.createElement("div"); m.className = "meter";
+      const mi = document.createElement("i"); mi.style.width = pct + "%"; m.append(mi);
+      const opts = document.createElement("div"); opts.className = "opts";
+      s.q.options.forEach((o, i) => {
+        const row = document.createElement("div");
+        row.className = "opt" + (i === s.q.answer ? " right" : "");
+        const lab = document.createElement("span"); lab.className = "t"; lab.textContent = String.fromCharCode(65 + i) + (i === s.q.answer ? " ✓" : "");
+        const bar = document.createElement("span"); bar.className = "o";
+        const bi = document.createElement("i"); bi.style.width = (s.total ? (100 * s.counts[i]) / s.total : 0) + "%"; bar.append(bi);
+        const n = document.createElement("span"); n.className = "n"; n.textContent = s.counts[i];
+        const txt = document.createElement("span"); txt.textContent = o.en; txt.className = "muted";
+        row.append(lab, bar, n, txt);
+        opts.append(row);
+      });
+      d.append(head, m, opts);
+      sec.append(d);
+    }
+    root.append(sec);
+  }
+}
+</script>
+</body>
+</html>

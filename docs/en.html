@@ -108,6 +108,7 @@ flutter doctor</code></pre></li>
 </tbody>
 </table>
 </div>
+<div class="quiz" data-step="0"></div>
 </section>
 
 <section class="step panel" id="step-1">
@@ -136,6 +137,7 @@ code .</code></pre></li>
 </tbody>
 </table>
 </div>
+<div class="quiz" data-step="1"></div>
 </section>
 
 <section class="step panel" id="step-2">
@@ -210,6 +212,7 @@ class NotesListScreen extends StatelessWidget {
 </tbody>
 </table>
 </div>
+<div class="quiz" data-step="2"></div>
 <p class="break-note"><i class="fa-solid fa-mug-hot ic" aria-hidden="true"></i>Break — 10 min</p>
 </section>
 
@@ -334,6 +337,7 @@ import 'models/note.dart';</code></pre></li>
 </tbody>
 </table>
 </div>
+<div class="quiz" data-step="3"></div>
 </section>
 
 <section class="step panel" id="step-4">
@@ -498,6 +502,7 @@ class NotesApp extends StatelessWidget {
 <div class="step-bonus"><strong><i class="fa-solid fa-rocket ic" aria-hidden="true"></i>Bonus</strong>
 <p><strong>Search:</strong> add a search field that filters notes by title. Hint: a method in <code>DatabaseHelper</code> using <code>db.query('notes', where: 'title LIKE ?', whereArgs: ['%$query%'])</code>.</p>
 </div>
+<div class="quiz" data-step="4"></div>
 </section>
 
 <section class="step panel" id="step-5">
@@ -638,6 +643,7 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 <div class="step-bonus"><strong><i class="fa-solid fa-rocket ic" aria-hidden="true"></i>Bonus</strong>
 <p><strong>Favorites:</strong> add a <code>favorite</code> column. This changes the schema: bump <code>version</code> to 2 and add <code>onUpgrade</code> with <code>ALTER TABLE notes ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0</code>.</p>
 </div>
+<div class="quiz" data-step="5"></div>
 </section>
 
 <section class="step panel" id="step-6">
@@ -688,6 +694,7 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 <div class="step-bonus"><strong><i class="fa-solid fa-rocket ic" aria-hidden="true"></i>Bonus</strong>
 <ul><li><strong>Sort:</strong> offer sorting by date or by title (hint: <code>orderBy: 'title'</code>).</li><li>If not done yet: search (Step 4) and favorites (Step 5).</li><li><strong>Firebase</strong>, take-home (see above).</li></ul>
 </div>
+<div class="quiz" data-step="6"></div>
 </section>
 
       </div>
@@ -699,5 +706,6 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
   <script src="app.js"></script>
+  <script type="module" src="quiz.js"></script>
 </body>
 </html>

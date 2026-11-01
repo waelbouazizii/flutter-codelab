@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Quiz answers.
+    // Students are NOT signed in: they can only ADD an answer that has exactly
+    // the expected shape. They cannot read, change or delete anything.
+    // Only the instructor (Google account below, email verified) can read.
+    match /answers/{answerId} {
+      // The document id is fixed (session_studentId_quizId), so a student can
+      // answer each question only once: a second create hits an existing doc,
+      // and update is denied.
+      allow create: if answerId == request.resource.data.session + '_'
+                         + request.resource.data.studentId + '_' + request.resource.data.quizId
+                    && request.resource.data.keys().hasOnly(
+                         ['session', 'studentId', 'nickname', 'quizId', 'step', 'selected', 'lang', 'ts'])
+                    && request.resource.data.keys().hasAll(
+                         ['session', 'studentId', 'nickname', 'quizId', 'step', 'selected', 'lang', 'ts'])
+                    && request.resource.data.session is string
+                    && request.resource.data.session.size() >= 1
+                    && request.resource.data.session.size() <= 40
+                    && request.resource.data.studentId is string
+                    && request.resource.data.studentId.size() >= 8
+                    && request.resource.data.studentId.size() <= 64
+                    && request.resource.data.nickname is string
+                    && request.resource.data.nickname.size() <= 30
+                    && request.resource.data.quizId is string
+                    && request.resource.data.quizId.matches('^s[0-6]-q[1-3]$')
+                    && request.resource.data.step is int
+                    && request.resource.data.step >= 0
+                    && request.resource.data.step <= 6
+                    && request.resource.data.selected is int
+                    && request.resource.data.selected >= 0
+                    && request.resource.data.selected <= 3
+                    && request.resource.data.lang in ['fr', 'en']
+                    && request.resource.data.ts == request.time;
+
+      allow read: if request.auth != null
+                  && request.auth.token.email_verified == true
+                  && request.auth.token.email == 'INSTRUCTOR_EMAIL';
+
+      allow update, delete: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

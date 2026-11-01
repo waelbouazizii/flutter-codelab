@@ -43,6 +43,13 @@ Details and links: `flutter-conventions.md` section 0. / Détails et liens : `fl
 
 ---
 
+## 2b. Quizzes + live dashboard / Quiz + tableau de bord en direct
+
+🇫🇷 Trois questions à choix multiple à la fin de chaque étape (21 au total), avec un tableau de bord en direct pour l'instructeur (`dashboard.html`). Détails : `flutter-quiz-spec.md`. **Budget temps :** environ 3 minutes par étape, soit ~20 min sur 180 : c'est serré. Si vous êtes en retard, sautez le quiz de l'étape (le quiz ne fait pas partie du parcours de base ; la ligne de coupe ne change pas).
+🇬🇧 Three multiple-choice questions at the end of every step (21 total), with a live instructor dashboard (`dashboard.html`). Details: `flutter-quiz-spec.md`. **Time budget:** about 3 minutes per step, ~20 min out of 180: tight. If you are behind, skip that step's quiz (quizzes are not part of the core path; the cut line is unchanged).
+
+---
+
 ## 3. Mixed-level strategy / Stratégie niveaux mixtes
 
 | 🇫🇷 | 🇬🇧 |
@@ -65,6 +72,7 @@ Each step in the codelab HTML has: / Chaque étape du codelab HTML contient :
 4. ✅ "You should see…" / « Vous devriez voir… »
 5. 🛟 If stuck / En cas de blocage → checkpoint tag + common errors
 6. 🚀 Bonus (optional)
+7. ❓ Quiz — 3 questions (`<div class="quiz" data-step="N">`) / Quiz — 3 questions
 
 A language toggle (FR / EN) switches all prose; code blocks never change. / Un sélecteur FR / EN change tout le texte ; les blocs de code ne changent jamais.
 
@@ -72,6 +80,6 @@ A language toggle (FR / EN) switches all prose; code blocks never change. / Un s
 
 ## 5. Out of scope / Hors périmètre
 
-- Firebase (take-home only: link to the official FlutterFire setup) / Firebase (à la maison uniquement : lien vers la configuration FlutterFire officielle)
+- Firebase **inside the notes app** (take-home only: link to the official FlutterFire setup). Firebase is used only for the quiz dashboard, on the web side. / Firebase **dans l'application de notes** (à la maison uniquement : lien vers la configuration FlutterFire officielle). Firebase sert uniquement au tableau de bord des quiz, côté web.
 - State-management packages (Provider, Riverpod, Bloc) — `setState` only / aucun package de gestion d'état — `setState` uniquement
 - iOS / macOS / web targets
