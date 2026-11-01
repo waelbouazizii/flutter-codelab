@@ -1,86 +1,130 @@
-/* Shared styles for the codelab pages: readable on phone and projector. */
+/* Shared styles for the codelab pages: readable on phone and projector.
+   Flutter look: Flutter blues (#02569B, #0175C2, #13B9FD), navy header,
+   Roboto for prose, Roboto Mono for code, Prism highlighting for Dart. */
 
 :root {
-  --bg: #f7f8fa;
+  /* Flutter palette */
+  --flutter-navy: #042b59;
+  --flutter-blue-dark: #02569b;
+  --flutter-blue: #0175c2;
+  --flutter-sky: #13b9fd;
+
+  --bg: #f4f8fc;
   --surface: #ffffff;
-  --text: #1b1f24;
-  --muted: #5a6370;
-  --border: #d9dee5;
-  --accent: #0b6bcb;
+  --text: #1c2834;
+  --muted: #4f5d6b;
+  --border: #d6e2ee;
+  --accent: var(--flutter-blue);
+  --accent-strong: var(--flutter-blue-dark);
+  --accent-soft: #e3f2fd;
   --accent-text: #ffffff;
-  --code-bg: #0f172a;
-  --code-text: #e2e8f0;
-  --stuck-bg: #fff4e5;
+  --header-bg: var(--flutter-navy);
+  --header-text: #ffffff;
+  --header-muted: #b8cde3;
+  --code-bg: #0b1d33;
+  --code-text: #e6edf5;
+  --inline-code-bg: #e8f1fa;
+  --inline-code-text: #02569b;
+  --stuck-bg: #fff6e8;
   --stuck-border: #f0a84a;
-  --bonus-bg: #eef7ee;
-  --bonus-border: #5aa85a;
-  --done: #2e8b57;
+  --bonus-bg: #e8f8fe;
+  --bonus-border: #13b9fd;
+  --done: #1e8e5a;
   --radius: 12px;
+  --shadow: 0 1px 2px rgba(4, 43, 89, 0.06), 0 2px 6px rgba(4, 43, 89, 0.08);
+  --font-sans: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Roboto Mono", Consolas, "Cascadia Code", monospace;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e1116;
-    --surface: #171b22;
-    --text: #e6e9ee;
-    --muted: #9aa4b2;
-    --border: #2b323d;
-    --accent: #5aa9ff;
-    --accent-text: #0e1116;
-    --code-bg: #05080f;
-    --code-text: #e2e8f0;
+    --bg: #0a1622;
+    --surface: #12212f;
+    --text: #e3ecf4;
+    --muted: #9fb2c4;
+    --border: #23384c;
+    --accent: #4fc3f7;
+    --accent-strong: #81d4fa;
+    --accent-soft: #10314a;
+    --accent-text: #04223b;
+    --header-bg: #051a33;
+    --header-text: #ffffff;
+    --header-muted: #9fb8d2;
+    --code-bg: #06121f;
+    --code-text: #e6edf5;
+    --inline-code-bg: #173048;
+    --inline-code-text: #81d4fa;
     --stuck-bg: #2a2114;
     --stuck-border: #c98a33;
-    --bonus-bg: #15241a;
-    --bonus-border: #4d9a5d;
+    --bonus-bg: #0e2a3a;
+    --bonus-border: #13b9fd;
     --done: #5cc98a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.3);
     color-scheme: dark;
   }
 }
 
 * { box-sizing: border-box; }
 
-html { font-size: 18px; }
+html { font-size: 18px; scroll-behavior: smooth; }
 @media (min-width: 1200px) { html { font-size: 20px; } }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
+h1, h2, h3 { font-weight: 500; line-height: 1.25; }
+strong { font-weight: 700; }
 a { color: var(--accent); }
+a:hover { color: var(--accent-strong); }
 
 /* Header */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--header-bg);
+  color: var(--header-text);
+  box-shadow: 0 2px 8px rgba(4, 43, 89, 0.25);
 }
 .header-inner {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0.6rem 16px;
+  padding: 0.65rem 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
-.home-link { font-weight: 700; text-decoration: none; color: var(--text); }
+.home-link { font-weight: 500; text-decoration: none; color: var(--header-text); }
+.home-link:hover { color: var(--flutter-sky); }
+.site-header .home-link code {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--flutter-sky);
+}
 .lang-switch {
-  padding: 0.3rem 0.8rem;
-  border: 1px solid var(--accent);
+  padding: 0.3rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
+  color: var(--header-text);
   text-decoration: none;
   white-space: nowrap;
+  font-size: 0.9rem;
 }
-.progress { height: 4px; background: var(--border); }
-.progress-bar { height: 100%; width: 0; background: var(--done); transition: width 0.2s; }
+.lang-switch:hover { background: rgba(255, 255, 255, 0.12); color: var(--header-text); }
+.progress { height: 4px; background: rgba(255, 255, 255, 0.15); }
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--flutter-blue), var(--flutter-sky));
+  transition: width 0.3s ease-in-out;
+}
 
 /* Steps */
 .steps { max-width: 900px; margin: 0 auto; padding: 1.5rem 16px 3rem; }
@@ -88,17 +132,27 @@ a { color: var(--accent); }
 .step, #prerequisites {
   background: var(--surface);
   border: 1px solid var(--border);
+  border-top: 4px solid var(--accent);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 1.25rem 1.25rem 1rem;
   margin-bottom: 1.5rem;
   scroll-margin-top: 5rem;
 }
-.step h2, #prerequisites h2 { margin-top: 0; }
-.step.is-done { border-left: 6px solid var(--done); }
+#prerequisites { border-top-color: var(--flutter-sky); }
+.step h2, #prerequisites h2 { margin-top: 0; color: var(--accent-strong); }
+.step.is-done { border-top-color: var(--done); }
+.step.is-done h2 { color: var(--done); }
 
-.step-duration { color: var(--muted); font-weight: 600; }
+.step-goal {
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+}
+.step-duration { color: var(--muted); font-weight: 500; margin: 0.5rem 0; }
 .step-instructions li { margin-bottom: 0.75rem; }
-.step-result { border-left: 4px solid var(--accent); padding-left: 0.75rem; }
+.step-instructions li::marker { color: var(--accent); font-weight: 700; }
+.step-result { border-left: 4px solid var(--done); padding-left: 0.75rem; margin-top: 1rem; }
 .step-stuck, .step-bonus {
   border-radius: 8px;
   padding: 0.75rem 1rem;
@@ -109,13 +163,19 @@ a { color: var(--accent); }
 .step-bonus { background: var(--bonus-bg); border-color: var(--bonus-border); }
 
 .step-why { margin: 0.5rem 0; }
-.file-name { margin: 0.75rem 0 -0.5rem; font-weight: 600; color: var(--muted); }
+.file-name {
+  margin: 0.75rem 0 -0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-strong);
+}
 .checklist { list-style: none; padding-left: 0; }
-.checklist li::before { content: "☐ "; }
+.checklist li::before { content: "☐ "; color: var(--accent); }
 .note { color: var(--muted); }
 .break-note {
   text-align: center;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--muted);
   margin: -0.5rem 0 1.5rem;
 }
@@ -125,23 +185,26 @@ a { color: var(--accent); }
   align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
-.step-done-toggle input { width: 1.2rem; height: 1.2rem; }
+.step-done-toggle input { width: 1.2rem; height: 1.2rem; accent-color: var(--done); }
 
 table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
 th, td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+th { background: var(--accent-soft); font-weight: 500; }
 
 /* Code */
-code { font-family: Consolas, "Cascadia Code", "Fira Code", monospace; font-size: 0.9em; }
+code { font-family: var(--font-mono); font-size: 0.88em; }
 :not(pre) > code {
-  background: var(--border);
+  background: var(--inline-code-bg);
+  color: var(--inline-code-text);
   padding: 0.1em 0.35em;
   border-radius: 4px;
 }
 .code-wrap { position: relative; margin: 0.75rem 0; }
-pre {
+pre,
+pre[class*="language-"] {
   margin: 0;
   background: var(--code-bg);
   color: var(--code-text);
@@ -149,9 +212,16 @@ pre {
   padding-top: 2.4rem;
   border-radius: 8px;
   overflow-x: auto;
-  line-height: 1.45;
+  line-height: 1.5;
 }
-pre code { background: none; padding: 0; font-size: 0.85rem; }
+pre code,
+pre code[class*="language-"] {
+  background: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-shadow: none;
+}
 .copy-btn {
   position: absolute;
   top: 0.4rem;
@@ -159,21 +229,32 @@ pre code { background: none; padding: 0; font-size: 0.85rem; }
   padding: 0.25rem 0.7rem;
   font: inherit;
   font-size: 0.8rem;
-  border: none;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  background: var(--accent);
-  color: var(--accent-text);
+  background: rgba(19, 185, 253, 0.18);
+  color: #e6f6ff;
   cursor: pointer;
 }
-.copy-btn.copied { background: var(--done); }
+.copy-btn:hover { background: rgba(19, 185, 253, 0.32); }
+.copy-btn.copied { background: var(--done); border-color: var(--done); color: #ffffff; }
 
 /* Footer */
 .site-footer { text-align: center; color: var(--muted); padding: 1rem 16px 2rem; font-size: 0.85rem; }
 
 /* Language chooser */
-.chooser { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.chooser {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--flutter-navy) 0%, var(--flutter-blue-dark) 60%, var(--flutter-blue) 100%);
+  color: #ffffff;
+}
+.chooser h1 { font-weight: 500; }
+.chooser h1 code { background: rgba(255, 255, 255, 0.12); color: var(--flutter-sky); }
 .chooser-main { text-align: center; padding: 2rem 16px; }
-.chooser-sub { color: var(--muted); }
+.chooser-sub { color: #b8cde3; }
 .chooser-buttons { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 2rem; }
 .lang-btn {
   display: flex;
@@ -183,11 +264,14 @@ pre code { background: none; padding: 0; font-size: 0.85rem; }
   width: 12rem;
   height: 9rem;
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
   border-radius: var(--radius);
-  background: var(--accent);
-  color: var(--accent-text);
+  background: #ffffff;
+  color: var(--flutter-blue-dark);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease-in-out;
 }
-.lang-btn span { font-size: 1rem; font-weight: 500; }
-.lang-btn:hover, .lang-btn:focus-visible { filter: brightness(1.1); }
+.lang-btn span { font-size: 1rem; font-weight: 500; color: var(--flutter-blue); }
+.lang-btn:hover, .lang-btn:focus-visible { transform: translateY(-3px); color: var(--flutter-blue-dark); }
+.lang-btn:focus-visible { outline: 3px solid var(--flutter-sky); outline-offset: 3px; }
