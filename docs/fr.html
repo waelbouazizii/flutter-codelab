@@ -399,7 +399,7 @@ class AddEditNoteScreen extends StatelessWidget {
     );
   }
 }</code></pre></li>
-<li>Créez l'écran de liste :<p class="file-name"><code>lib/screens/notes_list_screen.dart</code></p>
+<li><strong>Partie 1 : les données et le chargement.</strong> Créez l'écran de liste. Ce fichier ne contient que les données et la logique : sa méthode <code>build</code> est encore presque vide (juste la barre d'app) et nous la remplissons dans les parties suivantes.<p class="file-name"><code>lib/screens/notes_list_screen.dart</code></p>
 <pre><code class="language-dart">import 'package:flutter/material.dart';
 
 import '../data/database_helper.dart';
@@ -449,6 +449,73 @@ class _NotesListScreenState extends State&lt;NotesListScreen&gt; {  // The data 
   Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
     return Scaffold(  // Page skeleton: app bar, body, floating button
       appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+    );
+  }
+}</code></pre><p>Ce qu'il contient : <code>_notes</code> et <code>_loading</code> gardent les données qui changent ; <code>initState</code> appelle <code>_loadNotes</code> une seule fois, à l'ouverture de l'écran ; <code>_loadNotes</code> lit SQLite puis appelle <code>setState</code> pour redessiner ; <code>_openEditor</code> ouvre le formulaire ; <code>_deleteNote</code> supprime une ligne et recharge.</p></li>
+<li>Remplacez <strong>tout</strong> <code>lib/main.dart</code> par sa version finale. Cela supprime la liste statique et le test de l'étape 3 ; les notes déjà insérées restent dans la base.<p class="file-name"><code>lib/main.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import 'screens/notes_list_screen.dart';
+
+void main() {  // Every Dart program starts here
+  runApp(const NotesApp());  // Show NotesApp on screen
+}
+
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
+  const NotesApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
+      title: 'Notes',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
+      ),
+      home: const NotesListScreen(),  // The first screen shown
+    );
+  }
+}</code></pre></li>
+<li>Appuyez sur <code>R</code> (hot restart), ou relancez <code>flutter run</code> si l'application est arrêtée. Vous devriez voir une barre « My Notes » et une page vide : les notes sont chargées, mais rien ne les affiche encore.</li>
+<li><strong>Partie 2 : afficher les notes.</strong> Dans <code>notes_list_screen.dart</code>, Remplacez <strong>toute</strong> la méthode <code>build</code> : sélectionnez-la depuis <code>@override</code> jusqu'à sa propre <code>}</code> fermante, celle juste avant la <strong>dernière</strong> <code>}</code> du fichier. Gardez cette dernière <code>}</code> : n'en collez jamais une deuxième.<pre><code class="language-dart">  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: _loading  // Show a spinner, the empty message or the list
+          ? const Center(child: CircularProgressIndicator())  // Still loading
+          : _notes.isEmpty  // Loaded, but is it empty?
+              ? const Center(child: Text('No notes yet. Tap + to add one.'))  // Empty-state message
+              : ListView.builder(
+                  itemCount: _notes.length,
+                  itemBuilder: (context, index) {  // Called once per row; index is the row number
+                    final note = _notes[index];  // The note for this row
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: ListTile(  // Standard row: title and subtitle
+                        title: Text(note.title),
+                        subtitle: Text(
+                          note.content,
+                          maxLines: 2,  // At most 2 lines
+                          overflow: TextOverflow.ellipsis,  // Add ... when the text is too long
+                        ),
+                        onTap: () =&gt; _openEditor(note),  // Tap a row to edit it
+                      ),
+                    );
+                  },
+                ),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () =&gt; _openEditor(),  // The + button opens the form to add
+        child: const Icon(Icons.add),  // The + icon
+      ),
+    );
+  }</code></pre><p>Lisez le <code>body</code> de haut en bas : <code>_loading</code> → un indicateur de chargement ; sinon <code>_notes.isEmpty</code> → le message « No notes yet » ; sinon un <code>ListView.builder</code> qui construit une <code>Card</code> avec un <code>ListTile</code> par note. Le <code>floatingActionButton</code> ouvre le formulaire.</p></li>
+<li>Enregistrez et appuyez sur <code>r</code> : les notes insérées à l'étape 3 apparaissent (« Test / Hello »). Touchez <strong>+</strong> : l'écran temporaire « Coming in Step 5 » s'ouvre ; la flèche de retour revient à la liste.</li>
+<li><strong>Partie 3 : glisser pour supprimer.</strong> Remplacez de nouveau la méthode <code>build</code>, avec la même règle qu'en partie 2. Seul changement : chaque <code>Card</code> est maintenant enveloppée dans un <code>Dismissible</code>.<pre><code class="language-dart">  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
       body: _loading  // Show a spinner, the empty message or the list
           ? const Center(child: CircularProgressIndicator())  // Still loading
           : _notes.isEmpty  // Loaded, but is it empty?
@@ -490,35 +557,9 @@ class _NotesListScreenState extends State&lt;NotesListScreen&gt; {  // The data 
         child: const Icon(Icons.add),  // The + icon
       ),
     );
-  }
-}</code></pre></li>
-<li>Faites le lien entre le code et l'écran :<ol><li><code>_loadNotes()</code> lit la base et appelle <code>setState</code> : c'est ce qui redessine la liste. Elle est lancée une fois depuis <code>initState</code>.</li><li><code>_loading</code> et <code>_notes.isEmpty</code> choisissent ce qui s'affiche : un indicateur de chargement, le message de liste vide, ou la liste.</li><li><code>Dismissible</code> enveloppe chaque ligne : la glisser vers la gauche appelle <code>_deleteNote</code>, qui supprime dans SQLite puis recharge.</li><li><code>if (!mounted) return;</code> arrête le code si l'écran a été fermé pendant l'<code>await</code>.</li></ol></li>
-<li>Remplacez <strong>tout</strong> <code>lib/main.dart</code> par sa version finale. Cela supprime la liste statique et le test de l'étape 3 ; les notes déjà insérées restent dans la base.<p class="file-name"><code>lib/main.dart</code></p>
-<pre><code class="language-dart">import 'package:flutter/material.dart';
-
-import 'screens/notes_list_screen.dart';
-
-void main() {  // Every Dart program starts here
-  runApp(const NotesApp());  // Show NotesApp on screen
-}
-
-class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
-  const NotesApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
-    return MaterialApp(  // Sets up Material Design, the theme and the first screen
-      title: 'Notes',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
-      ),
-      home: const NotesListScreen(),  // The first screen shown
-    );
-  }
-}</code></pre></li>
-<li>Appuyez sur <code>R</code> (hot restart), ou relancez <code>flutter run</code> si l'app est arrêtée.</li>
+  }</code></pre><p><code>Dismissible</code> rend son <code>child</code> glissable. <code>direction</code> n'autorise que de droite à gauche, <code>background</code> est la zone rouge affichée pendant le glissement, et <code>onDismissed</code> appelle <code>_deleteNote</code> après le geste. La <code>key</code> permet à Flutter de suivre chaque ligne.</p></li>
 <li>Glissez une note de droite à gauche : elle est supprimée. Arrêtez l'app (<code>q</code>) et relancez <code>flutter run</code> : la note supprimée ne revient pas.</li>
-<li>Touchez <strong>+</strong> : l'écran temporaire « Coming in Step 5 » s'ouvre ; la flèche retour ramène à la liste.</li>
+<li>Faites le lien entre le code et l'écran :<ol><li><code>_loadNotes()</code> lit la base et appelle <code>setState</code> : c'est ce qui redessine la liste. Elle est lancée une fois depuis <code>initState</code>.</li><li><code>_loading</code> et <code>_notes.isEmpty</code> choisissent ce qui s'affiche : un indicateur de chargement, le message de liste vide, ou la liste.</li><li><code>Dismissible</code> enveloppe chaque ligne : la glisser vers la gauche appelle <code>_deleteNote</code>, qui supprime dans SQLite puis recharge.</li><li><code>if (!mounted) return;</code> arrête le code si l'écran a été fermé pendant l'<code>await</code>.</li></ol></li>
 </ol>
 <div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>Vous devriez voir…</strong> les notes « Test / Hello » insérées à l'étape 3, la plus récente en haut. Un glissement affiche un fond rouge avec une corbeille et supprime la note. Quand tout est supprimé : « No notes yet. Tap + to add one. »</div>
 <div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>En cas de blocage</strong>
@@ -545,7 +586,7 @@ class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes,
 <div class="step-duration" data-min="30"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Durée : 30 min</div>
 <div class="step-why"><p><code>Navigator.push</code> ouvre un écran par-dessus le précédent ; <code>Navigator.pop(context, true)</code> le ferme et renvoie un résultat, et la liste se recharge. <code>Form</code> + <code>GlobalKey&lt;FormState&gt;</code> valide tous les champs d'un coup. Un <code>TextEditingController</code> contient le texte d'un champ et doit être libéré dans <code>dispose</code>. Le même écran sert à créer (<code>note == null</code>) et à modifier.</p></div>
 <ol class="step-instructions">
-<li>Remplacez le contenu temporaire de <code>lib/screens/add_edit_note_screen.dart</code> par :<p class="file-name"><code>lib/screens/add_edit_note_screen.dart</code></p>
+<li><strong>Partie 1 : le squelette de l'écran.</strong> Remplacez <strong>tout</strong> le contenu du fichier temporaire par ceci. L'écran devient un <code>StatefulWidget</code> avec ses deux contrôleurs de texte ; le formulaire viendra ensuite.<p class="file-name"><code>lib/screens/add_edit_note_screen.dart</code></p>
 <pre><code class="language-dart">import 'package:flutter/material.dart';
 
 import '../data/database_helper.dart';
@@ -582,7 +623,15 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
     super.dispose();
   }
 
-  Future&lt;void&gt; _save() async {  // Called by the Save button
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: Text(_isEditing ? 'Edit note' : 'New note')),  // Title depends on the mode
+    );
+  }
+}</code></pre><p><code>widget.note</code> est la note reçue : <code>null</code> signifie une nouvelle note, sinon on modifie. <code>_isEditing</code> pilote le titre. Chaque <code>TextEditingController</code> garde le texte d'un champ et démarre avec les valeurs de la note ; <code>dispose</code> les libère.</p></li>
+<li>Appuyez sur <code>R</code> (hot restart) : la classe passe de <code>StatelessWidget</code> à <code>StatefulWidget</code>, le hot reload ne suffit donc pas. Touchez <strong>+</strong> : vous voyez la barre « New note » et une page vide.</li>
+<li><strong>Partie 2 : la logique d'enregistrement.</strong> Ajoutez cette méthode <strong>entre</strong> <code>dispose()</code> et <code>build()</code> : collez-la seule, après la <code>}</code> fermante de <code>dispose()</code> et une ligne vide, et avant le <code>@override</code> de <code>build</code>. C'est une méthode complète : n'ajoutez ni ne retirez aucune accolade.<pre><code class="language-dart">  Future&lt;void&gt; _save() async {  // Called by the Save button
     if (!_formKey.currentState!.validate()) return;  // Stop if a field is invalid
 
     final note = Note(  // Build the note from the form
@@ -600,9 +649,8 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 
     if (!mounted) return;  // Stop if the screen was closed in the meantime
     Navigator.pop(context, true); // tell the list to refresh
-  }
-
-  @override
+  }</code></pre><p><code>_save</code> vérifie le formulaire avec <code>validate()</code>, construit une <code>Note</code>, puis fait un <code>update</code> (modification) ou un <code>insert</code> (nouvelle note). <code>Navigator.pop(context, true)</code> ferme l'écran et dit à la liste de se recharger. Rien ne change encore à l'écran.</p></li>
+<li><strong>Partie 3 : le formulaire.</strong> Remplacez <strong>toute</strong> la méthode <code>build</code> : sélectionnez-la depuis <code>@override</code> jusqu'à sa propre <code>}</code> fermante, celle juste avant la <strong>dernière</strong> <code>}</code> du fichier. Gardez cette dernière <code>}</code> : n'en collez jamais une deuxième.<pre><code class="language-dart">  @override
   Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
     return Scaffold(  // Page skeleton: app bar, body, floating button
       appBar: AppBar(title: Text(_isEditing ? 'Edit note' : 'New note')),  // Title depends on the mode
@@ -653,10 +701,8 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
         ),
       ),
     );
-  }
-}</code></pre></li>
-<li>Faites le lien entre le code et l'écran :<ol><li><code>widget.note</code> est la note reçue : <code>null</code> signifie une nouvelle note, sinon on modifie. <code>_isEditing</code> pilote le titre et le choix entre insertion et mise à jour.</li><li>Chaque <code>TextEditingController</code> garde le texte d'un champ et démarre avec les valeurs de la note ; <code>dispose</code> les libère.</li><li><code>validator</code> renvoie un message d'erreur ou <code>null</code> ; <code>_formKey.currentState!.validate()</code> les exécute tous quand vous touchez <strong>Save</strong>.</li><li><code>Navigator.pop(context, true)</code> ferme l'écran et dit à la liste de se recharger.</li></ol></li>
-<li>Appuyez sur <code>R</code> (hot restart) : la classe passe de <code>StatelessWidget</code> à <code>StatefulWidget</code>, le hot reload ne suffit pas.</li>
+  }</code></pre><p>Lisez-le de l'extérieur vers l'intérieur : <code>Scaffold</code> → <code>Padding</code> → <code>Form</code> → <code>Column</code>, qui empile le champ titre, un espace, le champ contenu (<code>Expanded</code> prend la hauteur restante), un autre espace et le bouton <strong>Save</strong>. Chaque <code>validator</code> renvoie un message d'erreur ou <code>null</code> ; <code>_formKey.currentState!.validate()</code> les exécute tous quand vous touchez <strong>Save</strong>.</p></li>
+<li>Enregistrez et appuyez sur <code>r</code> : le formulaire apparaît.</li>
 <li>Touchez <strong>+</strong>, puis <strong>Save</strong> sans rien écrire : les messages « Title is required » et « Content is required » apparaissent.</li>
 <li>Remplissez les deux champs et touchez <strong>Save</strong> : retour à la liste, la nouvelle note est en haut.</li>
 <li>Touchez une note : l'écran « Edit note » s'ouvre, pré-rempli. Modifiez-la et enregistrez.</li>
