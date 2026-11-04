@@ -59,23 +59,6 @@ Read CLAUDE.md, flutter-course-plan.md and flutter-conventions.md. Fill docs/fr.
 
 ---
 
-## Third prompt (after the content): quizzes + live dashboard
-
-Copy `quizzes.json`, `quiz.js`, `dashboard.html`, `firebase-config.example.js`, `firestore.rules` and `flutter-quiz-spec.md` into the repo first (the .js/.html/.json files go in `docs/`, the others at the root). Do the Firebase Console setup from the spec yourself before testing.
-
-```text
-Read CLAUDE.md and flutter-quiz-spec.md. The quiz files are already in docs/ (quizzes.json, quiz.js, dashboard.html, firebase-config.example.js).
-
-1. In docs/fr.html and docs/en.html: add `<div class="quiz" data-step="N"></div>` at the end of every step card (N = 0 to 6), and `<script type="module" src="quiz.js"></script>` before </body>. Make sure <html lang> is "fr" / "en".
-2. Add the quiz styles to docs/style.css (large tap targets, right/wrong shown with a symbol and not only color, dark mode).
-3. Create docs/firebase-config.js from firebase-config.example.js and keep the REPLACE_ME values (the config is not secret and must be published; do not gitignore it). Tell me at the end which values I must fill.
-4. Update scripts/check.py with the rules from the "Checker additions" section of flutter-quiz-spec.md. Run it and fix every failure.
-5. Do not modify quizzes.json text. If a question contradicts the code in flutter-conventions.md, tell me instead of silently changing it.
-6. Commit with the message "feat: add quizzes and live dashboard".
-```
-
----
-
 ## Reference solution repo (private/public, separate)
 
 Create `flutter-notes-solution` with the final `notes_app` and Git tags `step-0` … `step-6` matching the checkpoint table in `flutter-conventions.md`. Test the whole thing once on a clean Windows machine with a phone before the session.

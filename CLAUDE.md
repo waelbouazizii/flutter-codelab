@@ -13,7 +13,7 @@ Bilingual (French/English) Flutter codelab site for the `notes_app` lab.
 
 ## Layout
 - `index.html` shows no chooser: it redirects to `fr.html` by default, or to `en.html` when localStorage `flutter-codelab-lang` is `"en"` (the `#hash` is kept).
-- `fr.html` / `en.html`: a navy sidebar (course name, then Prerequisites, Step 0 … Step 6, with a "Break 10 min" divider after Step 2) and a main column (top bar with menu button on mobile, current panel title, Previous / Next, FR | EN toggle; progress bar; content area).
+- `fr.html` / `en.html`: a navy sidebar (course name, then Prerequisites, Step 0 … Step 6) and a main column (top bar with menu button on mobile, current panel title, Previous / Next, FR | EN toggle; progress bar; content area).
 - One panel at a time: the prerequisites card and the 7 step cards all have the class `panel`; the URL hash (`#prerequisites`, `#step-0` … `#step-6`) selects the visible one. Logic lives in `docs/app.js`.
 - The FR | EN toggle opens the other page on the same `#hash` and saves the choice in `flutter-codelab-lang`. Completed steps are saved in `flutter-codelab-progress` (shared by both pages).
 - Under 768px the sidebar becomes a drawer over a dark overlay.
@@ -37,15 +37,9 @@ The prerequisites card is `<section id="prerequisites" class="panel">`. Each ste
 | Expected result | `<div class="step-result">` |
 | If stuck (checkpoint tag + common errors) | `<div class="step-stuck">` |
 | Bonus (optional) | `<div class="step-bonus">` |
-| Quiz (required, last in the card) | `<div class="quiz" data-step="N"></div>` (empty) |
 
 ## Quizzes
-- Spec: `flutter-quiz-spec.md`. 3 questions per step (steps 0 to 6), ids `sN-q1` … `sN-q3`.
-- Quiz text lives ONLY in `docs/quizzes.json` (FR + EN), never in the HTML. Each step card ends with an empty `<div class="quiz" data-step="N"></div>`; the prerequisites card has none.
-- `docs/quiz.js` (ES module, loaded with `<script type="module" src="quiz.js">`) fills the divs and reads `<html lang>` (`fr` / `en`).
-- Code inside backticks in an option must be identical in `fr` and `en`. When code in `flutter-conventions.md` changes, re-check that `quizzes.json` still matches it.
-- `docs/firebase-config.js` is published on purpose (not secret; access is controlled by `firestore.rules`). Do not gitignore it. Use a new `SESSION_ID` per session.
-- `docs/dashboard.html` is for the instructor only: never link to it from `fr.html`, `en.html` or `index.html`.
+- Quizzes are NOT in the pages. The 21 questions (FR + EN) live in `quiz-questions.md` at the repo root (not published), for use in Kahoot or an end-of-session quiz.
 
 ## Checks
 - Run `python scripts/check.py` before every commit. It must exit 0.

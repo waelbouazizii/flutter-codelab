@@ -105,6 +105,49 @@
     var overlay = document.getElementById('overlay');
     var progress = loadProgress();
     var current = -1;
+    var timeLeft = document.getElementById('time-left');
+    var navTitles = Array.prototype.map.call(navItems, function (item) {
+      var el = item.querySelector('.nav-title');
+      return el ? el.textContent : '';
+    });
+    var labels = lang === 'fr'
+      ? { prev: 'Précédent', next: 'Suivant', left: ' min restantes' }
+      : { prev: 'Previous', next: 'Next', left: ' min left' };
+
+    function remainingMinutes(index) {
+      var total = 0;
+      for (var i = index; i < panels.length; i++) {
+        var d = panels[i].querySelector('.step-duration[data-min]');
+        if (d) total += parseInt(d.getAttribute('data-min'), 10) || 0;
+      }
+      return total;
+    }
+
+    function addFooters() {
+      panels.forEach(function (panel, i) {
+        var footer = document.createElement('div');
+        footer.className = 'step-footer';
+        if (i > 0) {
+          var prev = document.createElement('button');
+          prev.type = 'button';
+          prev.className = 'footer-btn';
+          prev.innerHTML = '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i><span></span>';
+          prev.lastChild.textContent = labels.prev;
+          prev.addEventListener('click', function () { go(i - 1); });
+          footer.appendChild(prev);
+        }
+        if (i < panels.length - 1) {
+          var next = document.createElement('button');
+          next.type = 'button';
+          next.className = 'footer-btn primary';
+          next.innerHTML = '<span></span><i class="fa-solid fa-chevron-right" aria-hidden="true"></i>';
+          next.firstChild.textContent = labels.next + (navTitles[i + 1] ? ': ' + navTitles[i + 1] : '');
+          next.addEventListener('click', function () { go(i + 1); });
+          footer.appendChild(next);
+        }
+        panel.appendChild(footer);
+      });
+    }
 
     function indexFromHash() {
       var index = ids.indexOf(window.location.hash.slice(1));
@@ -142,6 +185,11 @@
       if (nextBtn) nextBtn.disabled = index === panels.length - 1;
       if (bar) bar.style.width = (100 * (index + 1) / panels.length) + '%';
       if (content) content.scrollTop = 0;
+      if (timeLeft) {
+        var left = remainingMinutes(index);
+        timeLeft.hidden = !(left > 0 && id !== 'prerequisites');
+        timeLeft.textContent = left + labels.left;
+      }
 
       langLinks.forEach(function (a) {
         a.setAttribute('href', a.getAttribute('data-lang') + '.html#' + id);
@@ -207,6 +255,8 @@
         window.location.href = target + '.html' + window.location.hash;
       });
     });
+
+    addFooters();
 
     // No hash or an unknown one: show the prerequisites and put its hash in the URL.
     var startIndex = indexFromHash();

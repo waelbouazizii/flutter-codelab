@@ -124,49 +124,49 @@ Use the generated file. Goal: run it, press the button, change the title text, p
 ```dart
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const NotesApp());
+void main() {  // Every Dart program starts here
+  runApp(const NotesApp());  // Show NotesApp on screen
 }
 
-class NotesApp extends StatelessWidget {
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
   const NotesApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
       title: 'Notes',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
       ),
-      home: const NotesListScreen(),
+      home: const NotesListScreen(),  // The first screen shown
     );
   }
 }
 
-class NotesListScreen extends StatelessWidget {
+class NotesListScreen extends StatelessWidget {  // A screen with fixed content for now
   const NotesListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final titles = ['Buy milk', 'Prepare Flutter session', 'Call Sami'];
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    final titles = ['Buy milk', 'Prepare Flutter session', 'Call Sami'];  // Hard-coded data, replaced by SQLite in Step 4
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('My Notes')),
-      body: ListView.builder(
-        itemCount: titles.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ListTile(
-              title: Text(titles[index]),
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: ListView.builder(  // Scrollable list that builds only the visible rows
+        itemCount: titles.length,  // How many rows
+        itemBuilder: (context, index) {  // Called once per row; index is the row number
+          return Card(  // One card per row
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),  // Space around the card
+            child: ListTile(  // Standard row: title and subtitle
+              title: Text(titles[index]),  // Title of this row
               subtitle: const Text('Tap to open'),
             ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () {},  // Does nothing yet
+        child: const Icon(Icons.add),  // The + icon
       ),
     );
   }
@@ -179,12 +179,12 @@ class NotesListScreen extends StatelessWidget {
 
 ```dart
 class Note {
-  final int? id;
+  final int? id;  // Null before insert: SQLite generates it
   final String title;
   final String content;
   final DateTime createdAt;
 
-  const Note({
+  const Note({  // Constructor with named parameters
     this.id,
     required this.title,
     required this.content,
@@ -196,15 +196,15 @@ class Note {
         'id': id,
         'title': title,
         'content': content,
-        'created_at': createdAt.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),  // DateTime is stored as ISO 8601 text
       };
 
   // Build a Note from a SQLite row.
   factory Note.fromMap(Map<String, Object?> map) => Note(
-        id: map['id'] as int?,
+        id: map['id'] as int?,  // Cast each raw value to its real type
         title: map['title'] as String,
         content: map['content'] as String,
-        createdAt: DateTime.parse(map['created_at'] as String),
+        createdAt: DateTime.parse(map['created_at'] as String),  // Text back to a DateTime
       );
 }
 ```
@@ -218,19 +218,20 @@ import 'package:sqflite/sqflite.dart';
 import '../models/note.dart';
 
 class DatabaseHelper {
-  DatabaseHelper._();
-  static final DatabaseHelper instance = DatabaseHelper._();
+  DatabaseHelper._();  // Private constructor: nobody else can create one
+  static final DatabaseHelper instance = DatabaseHelper._();  // The single shared instance (singleton)
 
-  static Database? _db;
+  static Database? _db;  // The open connection, kept after the first use
 
-  Future<Database> get database async => _db ??= await _open();
+  Future<Database> get database async => _db ??= await _open();  // Open the database only the first time
 
   Future<Database> _open() async {
-    final path = join(await getDatabasesPath(), 'notes.db');
-    return openDatabase(
+    final path = join(await getDatabasesPath(), 'notes.db');  // Where the file lives on the device
+    return openDatabase(  // Opens the file, creates it if missing
       path,
-      version: 1,
-      onCreate: (db, version) async {
+      version: 1,  // Schema version: raise it when the schema changes
+      onCreate: (db, version) async {  // Runs only when the file is first created
+        // Create the notes table (SQL)
         await db.execute('''
           CREATE TABLE notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -243,31 +244,31 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insert(Note note) async {
-    final db = await database;
+  Future<int> insert(Note note) async {  // Add a note, returns the new id
+    final db = await database;  // Get the open database
     final values = note.toMap()..remove('id'); // let SQLite generate the id
-    return db.insert('notes', values);
+    return db.insert('notes', values);  // INSERT INTO notes
   }
 
-  Future<List<Note>> getAll() async {
-    final db = await database;
-    final rows = await db.query('notes', orderBy: 'created_at DESC');
-    return rows.map(Note.fromMap).toList();
+  Future<List<Note>> getAll() async {  // Read all the notes
+    final db = await database;  // Get the open database
+    final rows = await db.query('notes', orderBy: 'created_at DESC');  // SELECT, newest first
+    return rows.map(Note.fromMap).toList();  // Turn each row (Map) into a Note
   }
 
-  Future<int> update(Note note) async {
-    final db = await database;
+  Future<int> update(Note note) async {  // Change an existing note
+    final db = await database;  // Get the open database
     return db.update(
       'notes',
       note.toMap(),
-      where: 'id = ?',
-      whereArgs: [note.id],
+      where: 'id = ?',  // Only the row with this id
+      whereArgs: [note.id],  // Replaces the ? safely (no SQL injection)
     );
   }
 
-  Future<int> delete(int id) async {
-    final db = await database;
-    return db.delete('notes', where: 'id = ?', whereArgs: [id]);
+  Future<int> delete(int id) async {  // Remove a note by id
+    final db = await database;  // Get the open database
+    return db.delete('notes', where: 'id = ?', whereArgs: [id]);  // DELETE FROM notes WHERE id = ?
   }
 }
 ```
@@ -275,13 +276,13 @@ class DatabaseHelper {
 Quick test (temporary, in `main()`):
 
 ```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final id = await DatabaseHelper.instance.insert(
+void main() async {  // async because we await the database below
+  WidgetsFlutterBinding.ensureInitialized();  // Required before using a plugin ahead of runApp
+  final id = await DatabaseHelper.instance.insert(  // Temporary test: insert one note
     Note(title: 'Test', content: 'Hello', createdAt: DateTime.now()),
   );
-  debugPrint('Inserted note with id $id');
-  runApp(const NotesApp());
+  debugPrint('Inserted note with id $id');  // Printed in the console
+  runApp(const NotesApp());  // Show NotesApp on screen
 }
 ```
 
@@ -298,88 +299,88 @@ import '../data/database_helper.dart';
 import '../models/note.dart';
 import 'add_edit_note_screen.dart';
 
-class NotesListScreen extends StatefulWidget {
+class NotesListScreen extends StatefulWidget {  // Stateful: the list of notes changes over time
   const NotesListScreen({super.key});
 
   @override
-  State<NotesListScreen> createState() => _NotesListScreenState();
+  State<NotesListScreen> createState() => _NotesListScreenState();  // Creates the object that holds the data
 }
 
-class _NotesListScreenState extends State<NotesListScreen> {
-  List<Note> _notes = [];
-  bool _loading = true;
+class _NotesListScreenState extends State<NotesListScreen> {  // The data and the logic live here
+  List<Note> _notes = [];  // The notes currently shown
+  bool _loading = true;  // True until the first load ends
 
   @override
-  void initState() {
+  void initState() {  // Runs once when the screen opens
     super.initState();
-    _loadNotes();
+    _loadNotes();  // Load the notes from SQLite
   }
 
-  Future<void> _loadNotes() async {
-    final notes = await DatabaseHelper.instance.getAll();
-    if (!mounted) return;
-    setState(() {
+  Future<void> _loadNotes() async {  // Read the database, then redraw
+    final notes = await DatabaseHelper.instance.getAll();  // Wait for the rows
+    if (!mounted) return;  // Stop if the screen was closed in the meantime
+    setState(() {  // Tell Flutter to redraw with the new data
       _notes = notes;
       _loading = false;
     });
   }
 
-  Future<void> _openEditor([Note? note]) async {
-    final changed = await Navigator.push<bool>(
+  Future<void> _openEditor([Note? note]) async {  // Open the form: no note = add, a note = edit
+    final changed = await Navigator.push<bool>(  // Open a new screen and wait for its result
       context,
-      MaterialPageRoute(builder: (_) => AddEditNoteScreen(note: note)),
+      MaterialPageRoute(builder: (_) => AddEditNoteScreen(note: note)),  // The screen to open
     );
-    if (changed == true) _loadNotes();
+    if (changed == true) _loadNotes();  // The form saved something: reload the list
   }
 
-  Future<void> _deleteNote(Note note) async {
-    await DatabaseHelper.instance.delete(note.id!);
+  Future<void> _deleteNote(Note note) async {  // Delete from the database, then refresh
+    await DatabaseHelper.instance.delete(note.id!);  // ! because id is never null once read from the DB
     await _loadNotes();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('My Notes')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _notes.isEmpty
-              ? const Center(child: Text('No notes yet. Tap + to add one.'))
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: _loading  // Show a spinner, the empty message or the list
+          ? const Center(child: CircularProgressIndicator())  // Still loading
+          : _notes.isEmpty  // Loaded, but is it empty?
+              ? const Center(child: Text('No notes yet. Tap + to add one.'))  // Empty-state message
               : ListView.builder(
                   itemCount: _notes.length,
-                  itemBuilder: (context, index) {
-                    final note = _notes[index];
-                    return Dismissible(
-                      key: ValueKey(note.id),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
+                  itemBuilder: (context, index) {  // Called once per row; index is the row number
+                    final note = _notes[index];  // The note for this row
+                    return Dismissible(  // Makes the row swipeable
+                      key: ValueKey(note.id),  // Unique key so Flutter tracks each row
+                      direction: DismissDirection.endToStart,  // Swipe from right to left only
+                      background: Container(  // Red area shown while swiping
                         color: Colors.red,
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
-                      onDismissed: (_) => _deleteNote(note),
+                      onDismissed: (_) => _deleteNote(note),  // After the swipe: delete the note
                       child: Card(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 6,
                         ),
-                        child: ListTile(
+                        child: ListTile(  // Standard row: title and subtitle
                           title: Text(note.title),
                           subtitle: Text(
                             note.content,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,  // At most 2 lines
+                            overflow: TextOverflow.ellipsis,  // Add ... when the text is too long
                           ),
-                          onTap: () => _openEditor(note),
+                          onTap: () => _openEditor(note),  // Tap a row to edit it
                         ),
                       ),
                     );
                   },
                 ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openEditor(),
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () => _openEditor(),  // The + button opens the form to add
+        child: const Icon(Icons.add),  // The + icon
       ),
     );
   }
@@ -393,21 +394,21 @@ import 'package:flutter/material.dart';
 
 import 'screens/notes_list_screen.dart';
 
-void main() {
-  runApp(const NotesApp());
+void main() {  // Every Dart program starts here
+  runApp(const NotesApp());  // Show NotesApp on screen
 }
 
-class NotesApp extends StatelessWidget {
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
   const NotesApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
       title: 'Notes',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
       ),
-      home: const NotesListScreen(),
+      home: const NotesListScreen(),  // The first screen shown
     );
   }
 }
@@ -433,90 +434,90 @@ class AddEditNoteScreen extends StatefulWidget {
 }
 
 class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _titleController;
-  late final TextEditingController _contentController;
+  final _formKey = GlobalKey<FormState>();  // Lets us validate the whole form at once
+  late final TextEditingController _titleController;  // Reads and sets the Title field text
+  late final TextEditingController _contentController;  // Reads and sets the Content field text
 
-  bool get _isEditing => widget.note != null;
+  bool get _isEditing => widget.note != null;  // True when editing an existing note
 
   @override
-  void initState() {
+  void initState() {  // Runs once when the screen opens
     super.initState();
-    _titleController = TextEditingController(text: widget.note?.title ?? '');
-    _contentController =
+    _titleController = TextEditingController(text: widget.note?.title ?? '');  // Start with the note title, or empty
+    _contentController =  // Same for the content
         TextEditingController(text: widget.note?.content ?? '');
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _contentController.dispose();
+  void dispose() {  // Runs when the screen is closed
+    _titleController.dispose();  // Free the controller
+    _contentController.dispose();  // Free the controller
     super.dispose();
   }
 
-  Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _save() async {  // Called by the Save button
+    if (!_formKey.currentState!.validate()) return;  // Stop if a field is invalid
 
-    final note = Note(
-      id: widget.note?.id,
-      title: _titleController.text.trim(),
+    final note = Note(  // Build the note from the form
+      id: widget.note?.id,  // Keep the id when editing
+      title: _titleController.text.trim(),  // What was typed, without extra spaces
       content: _contentController.text.trim(),
-      createdAt: widget.note?.createdAt ?? DateTime.now(),
+      createdAt: widget.note?.createdAt ?? DateTime.now(),  // Keep the original date when editing
     );
 
-    if (_isEditing) {
+    if (_isEditing) {  // Editing: UPDATE. Otherwise: INSERT
       await DatabaseHelper.instance.update(note);
     } else {
       await DatabaseHelper.instance.insert(note);
     }
 
-    if (!mounted) return;
+    if (!mounted) return;  // Stop if the screen was closed in the meantime
     Navigator.pop(context, true); // tell the list to refresh
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Edit note' : 'New note')),
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: Text(_isEditing ? 'Edit note' : 'New note')),  // Title depends on the mode
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
+        child: Form(  // Groups the fields so they can be validated
+          key: _formKey,  // Connects the form to its key
+          child: Column(  // Fields stacked vertically
             children: [
-              TextFormField(
-                controller: _titleController,
+              TextFormField(  // A text input
+                controller: _titleController,  // Connect the field to its controller
                 decoration: const InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => (value == null || value.trim().isEmpty)
+                validator: (value) => (value == null || value.trim().isEmpty)  // Return an error message, or null if valid
                     ? 'Title is required'
                     : null,
               ),
-              const SizedBox(height: 16),
-              Expanded(
+              const SizedBox(height: 16),  // Vertical gap
+              Expanded(  // Takes all the remaining height
                 child: TextFormField(
-                  controller: _contentController,
+                  controller: _contentController,  // Connect the field to its controller
                   decoration: const InputDecoration(
                     labelText: 'Content',
                     border: OutlineInputBorder(),
                     alignLabelWithHint: true,
                   ),
-                  maxLines: null,
-                  expands: true,
+                  maxLines: null,  // Any number of lines
+                  expands: true,  // Fill the available space
                   textAlignVertical: TextAlignVertical.top,
-                  validator: (value) =>
+                  validator: (value) =>  // Return an error message, or null if valid
                       (value == null || value.trim().isEmpty)
                           ? 'Content is required'
                           : null,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16),  // Vertical gap
               SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _save,
+                width: double.infinity,  // Full width
+                child: FilledButton(  // The Save button
+                  onPressed: _save,  // Run _save when tapped
                   child: const Text('Save'),
                 ),
               ),
@@ -540,7 +541,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
 
 | Tag | State |
 |---|---|
-| `step-0` | empty `flutter create` project |
+| *(none for step 0)* | setup only, no code, so no checkpoint |
 | `step-1` | counter app, edited title |
 | `step-2` | static list |
 | `step-3` | model + DatabaseHelper + test insert |
