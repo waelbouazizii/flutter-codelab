@@ -238,6 +238,59 @@ class NotesListScreen extends StatelessWidget {  // A screen with fixed content 
 <li>Le fichier <code>test/widget_test.dart</code> affiche maintenant une erreur (il utilise <code>MyApp</code>, qui n'existe plus). Supprimez ce fichier pour cette séance : il ne bloque pas <code>flutter run</code>.</li>
 </ol>
 <div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>Vous devriez voir…</strong> une barre « My Notes », trois cartes (<em>Buy milk</em>, <em>Prepare Flutter session</em>, <em>Call Sami</em>) et un bouton <strong>+</strong> en bas à droite qui ne fait encore rien.</div>
+<details class="step-fullcode"><summary><i class="fa-solid fa-file-code ic" aria-hidden="true"></i>Code complet de cette étape</summary>
+<p>Comparez vos fichiers avec ceux-ci, ou copiez-les avec le bouton Copier. Seuls les fichiers modifiés à cette étape sont affichés.</p>
+<p class="file-name"><code>lib/main.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+void main() {  // Every Dart program starts here
+  runApp(const NotesApp());  // Show NotesApp on screen
+}
+
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
+  const NotesApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
+      title: 'Notes',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
+      ),
+      home: const NotesListScreen(),  // The first screen shown
+    );
+  }
+}
+
+class NotesListScreen extends StatelessWidget {  // A screen with fixed content for now
+  const NotesListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    final titles = ['Buy milk', 'Prepare Flutter session', 'Call Sami'];  // Hard-coded data, replaced by SQLite in Step 4
+
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: ListView.builder(  // Scrollable list that builds only the visible rows
+        itemCount: titles.length,  // How many rows
+        itemBuilder: (context, index) {  // Called once per row; index is the row number
+          return Card(  // One card per row
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),  // Space around the card
+            child: ListTile(  // Standard row: title and subtitle
+              title: Text(titles[index]),  // Title of this row
+              subtitle: const Text('Tap to open'),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () {},  // Does nothing yet
+        child: const Icon(Icons.add),  // The + icon
+      ),
+    );
+  }
+}</code></pre>
+</details>
 <div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>En cas de blocage</strong>
 <p><strong>Checkpoint :</strong> tag <code>step-2</code>. Téléchargez <code>https://github.com/waelbouazizii/flutter-notes-solution/archive/refs/tags/step-2.zip</code>, décompressez-le dans un dossier sans espaces, puis lancez <code>flutter pub get</code> et <code>flutter run</code>.</p>
 <table>
@@ -361,6 +414,157 @@ import 'models/note.dart';</code></pre></li>
 <li>Regardez la console (terminal ou Debug Console de VS Code). Chaque lancement insère une nouvelle note (id 1, 2, 3…). <strong>Gardez ce test pour l'instant</strong> : ces notes apparaîtront à l'étape 4, où <code>main.dart</code> sera remplacé.</li>
 </ol>
 <div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>Vous devriez voir…</strong> <code>Inserted note with id 1</code> dans la console. L'écran affiche toujours la liste statique : c'est normal, il ne lit pas encore la base.</div>
+<details class="step-fullcode"><summary><i class="fa-solid fa-file-code ic" aria-hidden="true"></i>Code complet de cette étape</summary>
+<p>Comparez vos fichiers avec ceux-ci, ou copiez-les avec le bouton Copier. Seuls les fichiers modifiés à cette étape sont affichés. Ce <code>main.dart</code> contient encore la liste statique de l'étape 2, plus le test temporaire.</p>
+<p class="file-name"><code>lib/models/note.dart</code></p>
+<pre><code class="language-dart">class Note {
+  final int? id;  // Null before insert: SQLite generates it
+  final String title;
+  final String content;
+  final DateTime createdAt;
+
+  const Note({  // Constructor with named parameters
+    this.id,
+    required this.title,
+    required this.content,
+    required this.createdAt,
+  });
+
+  // Convert a Note to a Map for SQLite.
+  Map&lt;String, Object?&gt; toMap() =&gt; {
+        'id': id,
+        'title': title,
+        'content': content,
+        'created_at': createdAt.toIso8601String(),  // DateTime is stored as ISO 8601 text
+      };
+
+  // Build a Note from a SQLite row.
+  factory Note.fromMap(Map&lt;String, Object?&gt; map) =&gt; Note(
+        id: map['id'] as int?,  // Cast each raw value to its real type
+        title: map['title'] as String,
+        content: map['content'] as String,
+        createdAt: DateTime.parse(map['created_at'] as String),  // Text back to a DateTime
+      );
+}</code></pre>
+<p class="file-name"><code>lib/data/database_helper.dart</code></p>
+<pre><code class="language-dart">import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../models/note.dart';
+
+class DatabaseHelper {
+  DatabaseHelper._();  // Private constructor: nobody else can create one
+  static final DatabaseHelper instance = DatabaseHelper._();  // The single shared instance (singleton)
+
+  static Database? _db;  // The open connection, kept after the first use
+
+  Future&lt;Database&gt; get database async =&gt; _db ??= await _open();  // Open the database only the first time
+
+  Future&lt;Database&gt; _open() async {
+    final path = join(await getDatabasesPath(), 'notes.db');  // Where the file lives on the device
+    return openDatabase(  // Opens the file, creates it if missing
+      path,
+      version: 1,  // Schema version: raise it when the schema changes
+      onCreate: (db, version) async {  // Runs only when the file is first created
+        // Create the notes table (SQL)
+        await db.execute('''
+          CREATE TABLE notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TEXT NOT NULL
+          )
+        ''');
+      },
+    );
+  }
+
+  Future&lt;int&gt; insert(Note note) async {  // Add a note, returns the new id
+    final db = await database;  // Get the open database
+    final values = note.toMap()..remove('id'); // let SQLite generate the id
+    return db.insert('notes', values);  // INSERT INTO notes
+  }
+
+  Future&lt;List&lt;Note&gt;&gt; getAll() async {  // Read all the notes
+    final db = await database;  // Get the open database
+    final rows = await db.query('notes', orderBy: 'created_at DESC');  // SELECT, newest first
+    return rows.map(Note.fromMap).toList();  // Turn each row (Map) into a Note
+  }
+
+  Future&lt;int&gt; update(Note note) async {  // Change an existing note
+    final db = await database;  // Get the open database
+    return db.update(
+      'notes',
+      note.toMap(),
+      where: 'id = ?',  // Only the row with this id
+      whereArgs: [note.id],  // Replaces the ? safely (no SQL injection)
+    );
+  }
+
+  Future&lt;int&gt; delete(int id) async {  // Remove a note by id
+    final db = await database;  // Get the open database
+    return db.delete('notes', where: 'id = ?', whereArgs: [id]);  // DELETE FROM notes WHERE id = ?
+  }
+}</code></pre>
+<p class="file-name"><code>lib/main.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import 'data/database_helper.dart';
+import 'models/note.dart';
+
+void main() async {  // async because we await the database below
+  WidgetsFlutterBinding.ensureInitialized();  // Required before using a plugin ahead of runApp
+  final id = await DatabaseHelper.instance.insert(  // Temporary test: insert one note
+    Note(title: 'Test', content: 'Hello', createdAt: DateTime.now()),
+  );
+  debugPrint('Inserted note with id $id');  // Printed in the console
+  runApp(const NotesApp());  // Show NotesApp on screen
+}
+
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
+  const NotesApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
+      title: 'Notes',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
+      ),
+      home: const NotesListScreen(),  // The first screen shown
+    );
+  }
+}
+
+class NotesListScreen extends StatelessWidget {  // A screen with fixed content for now
+  const NotesListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    final titles = ['Buy milk', 'Prepare Flutter session', 'Call Sami'];  // Hard-coded data, replaced by SQLite in Step 4
+
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: ListView.builder(  // Scrollable list that builds only the visible rows
+        itemCount: titles.length,  // How many rows
+        itemBuilder: (context, index) {  // Called once per row; index is the row number
+          return Card(  // One card per row
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),  // Space around the card
+            child: ListTile(  // Standard row: title and subtitle
+              title: Text(titles[index]),  // Title of this row
+              subtitle: const Text('Tap to open'),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () {},  // Does nothing yet
+        child: const Icon(Icons.add),  // The + icon
+      ),
+    );
+  }
+}</code></pre>
+</details>
 <div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>En cas de blocage</strong>
 <p><strong>Checkpoint :</strong> tag <code>step-3</code>. Téléchargez <code>https://github.com/waelbouazizii/flutter-notes-solution/archive/refs/tags/step-3.zip</code>, décompressez-le dans un dossier sans espaces, puis lancez <code>flutter pub get</code> et <code>flutter run</code>.</p>
 <table>
@@ -562,6 +766,144 @@ class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes,
 <li>Faites le lien entre le code et l'écran :<ol><li><code>_loadNotes()</code> lit la base et appelle <code>setState</code> : c'est ce qui redessine la liste. Elle est lancée une fois depuis <code>initState</code>.</li><li><code>_loading</code> et <code>_notes.isEmpty</code> choisissent ce qui s'affiche : un indicateur de chargement, le message de liste vide, ou la liste.</li><li><code>Dismissible</code> enveloppe chaque ligne : la glisser vers la gauche appelle <code>_deleteNote</code>, qui supprime dans SQLite puis recharge.</li><li><code>if (!mounted) return;</code> arrête le code si l'écran a été fermé pendant l'<code>await</code>.</li></ol></li>
 </ol>
 <div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>Vous devriez voir…</strong> les notes « Test / Hello » insérées à l'étape 3, la plus récente en haut. Un glissement affiche un fond rouge avec une corbeille et supprime la note. Quand tout est supprimé : « No notes yet. Tap + to add one. »</div>
+<details class="step-fullcode"><summary><i class="fa-solid fa-file-code ic" aria-hidden="true"></i>Code complet de cette étape</summary>
+<p>Comparez vos fichiers avec ceux-ci, ou copiez-les avec le bouton Copier. Seuls les fichiers modifiés à cette étape sont affichés.</p>
+<p class="file-name"><code>lib/screens/notes_list_screen.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import '../data/database_helper.dart';
+import '../models/note.dart';
+import 'add_edit_note_screen.dart';
+
+class NotesListScreen extends StatefulWidget {  // Stateful: the list of notes changes over time
+  const NotesListScreen({super.key});
+
+  @override
+  State&lt;NotesListScreen&gt; createState() =&gt; _NotesListScreenState();  // Creates the object that holds the data
+}
+
+class _NotesListScreenState extends State&lt;NotesListScreen&gt; {  // The data and the logic live here
+  List&lt;Note&gt; _notes = [];  // The notes currently shown
+  bool _loading = true;  // True until the first load ends
+
+  @override
+  void initState() {  // Runs once when the screen opens
+    super.initState();
+    _loadNotes();  // Load the notes from SQLite
+  }
+
+  Future&lt;void&gt; _loadNotes() async {  // Read the database, then redraw
+    final notes = await DatabaseHelper.instance.getAll();  // Wait for the rows
+    if (!mounted) return;  // Stop if the screen was closed in the meantime
+    setState(() {  // Tell Flutter to redraw with the new data
+      _notes = notes;
+      _loading = false;
+    });
+  }
+
+  Future&lt;void&gt; _openEditor([Note? note]) async {  // Open the form: no note = add, a note = edit
+    final changed = await Navigator.push&lt;bool&gt;(  // Open a new screen and wait for its result
+      context,
+      MaterialPageRoute(builder: (_) =&gt; AddEditNoteScreen(note: note)),  // The screen to open
+    );
+    if (changed == true) _loadNotes();  // The form saved something: reload the list
+  }
+
+  Future&lt;void&gt; _deleteNote(Note note) async {  // Delete from the database, then refresh
+    await DatabaseHelper.instance.delete(note.id!);  // ! because id is never null once read from the DB
+    await _loadNotes();
+  }
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: _loading  // Show a spinner, the empty message or the list
+          ? const Center(child: CircularProgressIndicator())  // Still loading
+          : _notes.isEmpty  // Loaded, but is it empty?
+              ? const Center(child: Text('No notes yet. Tap + to add one.'))  // Empty-state message
+              : ListView.builder(
+                  itemCount: _notes.length,
+                  itemBuilder: (context, index) {  // Called once per row; index is the row number
+                    final note = _notes[index];  // The note for this row
+                    return Dismissible(  // Makes the row swipeable
+                      key: ValueKey(note.id),  // Unique key so Flutter tracks each row
+                      direction: DismissDirection.endToStart,  // Swipe from right to left only
+                      background: Container(  // Red area shown while swiping
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (_) =&gt; _deleteNote(note),  // After the swipe: delete the note
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(  // Standard row: title and subtitle
+                          title: Text(note.title),
+                          subtitle: Text(
+                            note.content,
+                            maxLines: 2,  // At most 2 lines
+                            overflow: TextOverflow.ellipsis,  // Add ... when the text is too long
+                          ),
+                          onTap: () =&gt; _openEditor(note),  // Tap a row to edit it
+                        ),
+                      ),
+                    );
+                  },
+                ),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () =&gt; _openEditor(),  // The + button opens the form to add
+        child: const Icon(Icons.add),  // The + icon
+      ),
+    );
+  }
+}</code></pre>
+<p class="file-name"><code>lib/screens/add_edit_note_screen.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import '../models/note.dart';
+
+// Temporary placeholder: replaced by the real form in Step 5.
+class AddEditNoteScreen extends StatelessWidget {
+  final Note? note;
+
+  const AddEditNoteScreen({super.key, this.note});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('New note')),
+      body: const Center(child: Text('Coming in Step 5')),
+    );
+  }
+}</code></pre>
+<p class="file-name"><code>lib/main.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import 'screens/notes_list_screen.dart';
+
+void main() {  // Every Dart program starts here
+  runApp(const NotesApp());  // Show NotesApp on screen
+}
+
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
+  const NotesApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
+      title: 'Notes',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
+      ),
+      home: const NotesListScreen(),  // The first screen shown
+    );
+  }
+}</code></pre>
+</details>
 <div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>En cas de blocage</strong>
 <p><strong>Checkpoint :</strong> tag <code>step-4</code>. Téléchargez <code>https://github.com/waelbouazizii/flutter-notes-solution/archive/refs/tags/step-4.zip</code>, décompressez-le dans un dossier sans espaces, puis lancez <code>flutter pub get</code> et <code>flutter run</code>.</p>
 <table>
@@ -710,6 +1052,119 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 <li><strong>Pas assez de temps ?</strong> Gardez seulement l'ajout : l'édition est déjà dans le code, il suffit de ne pas toucher une note.</li>
 </ol>
 <div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>Vous devriez voir…</strong> l'ajout avec validation, l'édition d'une note existante, et des notes qui restent après un redémarrage de l'app.</div>
+<details class="step-fullcode"><summary><i class="fa-solid fa-file-code ic" aria-hidden="true"></i>Code complet de cette étape</summary>
+<p>Comparez vos fichiers avec ceux-ci, ou copiez-les avec le bouton Copier. Seuls les fichiers modifiés à cette étape sont affichés. Les autres fichiers sont inchangés depuis l'étape 4.</p>
+<p class="file-name"><code>lib/screens/add_edit_note_screen.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import '../data/database_helper.dart';
+import '../models/note.dart';
+
+class AddEditNoteScreen extends StatefulWidget {
+  final Note? note; // null = create, not null = edit
+
+  const AddEditNoteScreen({super.key, this.note});
+
+  @override
+  State&lt;AddEditNoteScreen&gt; createState() =&gt; _AddEditNoteScreenState();
+}
+
+class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
+  final _formKey = GlobalKey&lt;FormState&gt;();  // Lets us validate the whole form at once
+  late final TextEditingController _titleController;  // Reads and sets the Title field text
+  late final TextEditingController _contentController;  // Reads and sets the Content field text
+
+  bool get _isEditing =&gt; widget.note != null;  // True when editing an existing note
+
+  @override
+  void initState() {  // Runs once when the screen opens
+    super.initState();
+    _titleController = TextEditingController(text: widget.note?.title ?? '');  // Start with the note title, or empty
+    _contentController =  // Same for the content
+        TextEditingController(text: widget.note?.content ?? '');
+  }
+
+  @override
+  void dispose() {  // Runs when the screen is closed
+    _titleController.dispose();  // Free the controller
+    _contentController.dispose();  // Free the controller
+    super.dispose();
+  }
+
+  Future&lt;void&gt; _save() async {  // Called by the Save button
+    if (!_formKey.currentState!.validate()) return;  // Stop if a field is invalid
+
+    final note = Note(  // Build the note from the form
+      id: widget.note?.id,  // Keep the id when editing
+      title: _titleController.text.trim(),  // What was typed, without extra spaces
+      content: _contentController.text.trim(),
+      createdAt: widget.note?.createdAt ?? DateTime.now(),  // Keep the original date when editing
+    );
+
+    if (_isEditing) {  // Editing: UPDATE. Otherwise: INSERT
+      await DatabaseHelper.instance.update(note);
+    } else {
+      await DatabaseHelper.instance.insert(note);
+    }
+
+    if (!mounted) return;  // Stop if the screen was closed in the meantime
+    Navigator.pop(context, true); // tell the list to refresh
+  }
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: Text(_isEditing ? 'Edit note' : 'New note')),  // Title depends on the mode
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(  // Groups the fields so they can be validated
+          key: _formKey,  // Connects the form to its key
+          child: Column(  // Fields stacked vertically
+            children: [
+              TextFormField(  // A text input
+                controller: _titleController,  // Connect the field to its controller
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =&gt; (value == null || value.trim().isEmpty)  // Return an error message, or null if valid
+                    ? 'Title is required'
+                    : null,
+              ),
+              const SizedBox(height: 16),  // Vertical gap
+              Expanded(  // Takes all the remaining height
+                child: TextFormField(
+                  controller: _contentController,  // Connect the field to its controller
+                  decoration: const InputDecoration(
+                    labelText: 'Content',
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  maxLines: null,  // Any number of lines
+                  expands: true,  // Fill the available space
+                  textAlignVertical: TextAlignVertical.top,
+                  validator: (value) =&gt;  // Return an error message, or null if valid
+                      (value == null || value.trim().isEmpty)
+                          ? 'Content is required'
+                          : null,
+                ),
+              ),
+              const SizedBox(height: 16),  // Vertical gap
+              SizedBox(
+                width: double.infinity,  // Full width
+                child: FilledButton(  // The Save button
+                  onPressed: _save,  // Run _save when tapped
+                  child: const Text('Save'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}</code></pre>
+</details>
 <div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>En cas de blocage</strong>
 <p><strong>Checkpoint :</strong> tag <code>step-5</code>. Téléchargez <code>https://github.com/waelbouazizii/flutter-notes-solution/archive/refs/tags/step-5.zip</code>, décompressez-le dans un dossier sans espaces, puis lancez <code>flutter pub get</code> et <code>flutter run</code>.</p>
 <table>
@@ -761,6 +1216,145 @@ class _AddEditNoteScreenState extends State&lt;AddEditNoteScreen&gt; {
 <li><strong>Et ensuite ?</strong> Firebase se fait à la maison, dans une séance séparée (il faut Node et un compte Google) : suivez la <a href="https://firebase.google.com/docs/flutter/setup">configuration officielle FlutterFire</a>. Ne le faites pas pendant cette séance.</li>
 </ol>
 <div class="step-result"><strong><i class="fa-solid fa-circle-check ic" aria-hidden="true"></i>Vous devriez voir…</strong> l'app qui suit le mode sombre du téléphone, et après un glissement un message « Deleted … » dont le bouton <strong>Undo</strong> remet la note.</div>
+<details class="step-fullcode"><summary><i class="fa-solid fa-file-code ic" aria-hidden="true"></i>Code complet de cette étape</summary>
+<p>Comparez vos fichiers avec ceux-ci, ou copiez-les avec le bouton Copier. Seuls les fichiers modifiés à cette étape sont affichés. Cela inclut la solution du mini-défi sur la date.</p>
+<p class="file-name"><code>lib/main.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import 'screens/notes_list_screen.dart';
+
+void main() {  // Every Dart program starts here
+  runApp(const NotesApp());  // Show NotesApp on screen
+}
+
+class NotesApp extends StatelessWidget {  // Root widget: nothing in it changes, so it is Stateless
+  const NotesApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return MaterialApp(  // Sets up Material Design, the theme and the first screen
+      title: 'Notes',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),  // Builds a full color palette from one color
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: ThemeMode.system,
+      home: const NotesListScreen(),  // The first screen shown
+    );
+  }
+}</code></pre>
+<p class="file-name"><code>lib/screens/notes_list_screen.dart</code></p>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+import '../data/database_helper.dart';
+import '../models/note.dart';
+import 'add_edit_note_screen.dart';
+
+class NotesListScreen extends StatefulWidget {  // Stateful: the list of notes changes over time
+  const NotesListScreen({super.key});
+
+  @override
+  State&lt;NotesListScreen&gt; createState() =&gt; _NotesListScreenState();  // Creates the object that holds the data
+}
+
+class _NotesListScreenState extends State&lt;NotesListScreen&gt; {  // The data and the logic live here
+  List&lt;Note&gt; _notes = [];  // The notes currently shown
+  bool _loading = true;  // True until the first load ends
+
+  @override
+  void initState() {  // Runs once when the screen opens
+    super.initState();
+    _loadNotes();  // Load the notes from SQLite
+  }
+
+  Future&lt;void&gt; _loadNotes() async {  // Read the database, then redraw
+    final notes = await DatabaseHelper.instance.getAll();  // Wait for the rows
+    if (!mounted) return;  // Stop if the screen was closed in the meantime
+    setState(() {  // Tell Flutter to redraw with the new data
+      _notes = notes;
+      _loading = false;
+    });
+  }
+
+  Future&lt;void&gt; _openEditor([Note? note]) async {  // Open the form: no note = add, a note = edit
+    final changed = await Navigator.push&lt;bool&gt;(  // Open a new screen and wait for its result
+      context,
+      MaterialPageRoute(builder: (_) =&gt; AddEditNoteScreen(note: note)),  // The screen to open
+    );
+    if (changed == true) _loadNotes();  // The form saved something: reload the list
+  }
+
+  Future&lt;void&gt; _deleteNote(Note note) async {  // Delete from the database, then refresh
+    await DatabaseHelper.instance.delete(note.id!);  // ! because id is never null once read from the DB
+    await _loadNotes();
+    if (!mounted) return;  // Stop if the screen was closed in the meantime
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Deleted "${note.title}"'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () async {
+            await DatabaseHelper.instance.insert(note); // gets a new id
+            await _loadNotes();
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+      body: _loading  // Show a spinner, the empty message or the list
+          ? const Center(child: CircularProgressIndicator())  // Still loading
+          : _notes.isEmpty  // Loaded, but is it empty?
+              ? const Center(child: Text('No notes yet. Tap + to add one.'))  // Empty-state message
+              : ListView.builder(
+                  itemCount: _notes.length,
+                  itemBuilder: (context, index) {  // Called once per row; index is the row number
+                    final note = _notes[index];  // The note for this row
+                    return Dismissible(  // Makes the row swipeable
+                      key: ValueKey(note.id),  // Unique key so Flutter tracks each row
+                      direction: DismissDirection.endToStart,  // Swipe from right to left only
+                      background: Container(  // Red area shown while swiping
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (_) =&gt; _deleteNote(note),  // After the swipe: delete the note
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(  // Standard row: title and subtitle
+                          title: Text(note.title),
+                          subtitle: Text(
+                            '${note.createdAt.day}/${note.createdAt.month}/${note.createdAt.year}\n${note.content}',
+                            maxLines: 3,  // At most 3 lines (date + 2 lines of content)
+                            overflow: TextOverflow.ellipsis,  // Add ... when the text is too long
+                          ),
+                          onTap: () =&gt; _openEditor(note),  // Tap a row to edit it
+                        ),
+                      ),
+                    );
+                  },
+                ),
+      floatingActionButton: FloatingActionButton(  // The round + button
+        onPressed: () =&gt; _openEditor(),  // The + button opens the form to add
+        child: const Icon(Icons.add),  // The + icon
+      ),
+    );
+  }
+}</code></pre>
+</details>
 <div class="step-stuck"><strong><i class="fa-solid fa-life-ring ic" aria-hidden="true"></i>En cas de blocage</strong>
 <p><strong>Checkpoint :</strong> tag <code>step-6</code>. Téléchargez <code>https://github.com/waelbouazizii/flutter-notes-solution/archive/refs/tags/step-6.zip</code>, décompressez-le dans un dossier sans espaces, puis lancez <code>flutter pub get</code> et <code>flutter run</code>.</p>
 <table>

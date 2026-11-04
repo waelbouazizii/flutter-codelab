@@ -506,3 +506,8 @@ pre code[class*="language-"] {
 .anatomy-svg rect.a8 { stroke: #6d4c41; }
 .anatomy-svg .b.a8 circle { fill: #6d4c41; }
 .abadge.a8 { background: #6d4c41; }
+
+/* Full code of a step (collapsible) */
+.step-fullcode { margin: 1rem 0; border: 1px solid var(--border); border-radius: var(--radius); padding: 0 1rem; }
+.step-fullcode > summary { cursor: pointer; padding: 0.7rem 0; font-weight: 500; color: var(--accent-strong); }
+.step-fullcode[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 0.6rem; }
