@@ -154,7 +154,7 @@ code .</code></pre></li>
 <div class="step-duration" data-min="25"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Duration: 25 min</div>
 <div class="step-why"><p>In Flutter, everything is a <strong>widget</strong>, and the screen is a tree of widgets. A <code>StatelessWidget</code> has no data that changes. <code>Scaffold</code> is the skeleton of a page (app bar, body, floating button) and <code>ListView.builder</code> only builds the rows visible on screen.</p></div>
 <ol class="step-instructions">
-<li>Replace <strong>all</strong> of <code>lib/main.dart</code> with:<p class="file-name"><code>lib/main.dart</code></p>
+<li><strong>Skeleton.</strong> Replace <strong>all</strong> of <code>lib/main.dart</code> with two widgets: <code>NotesApp</code> (the root: Material Design, theme, first screen) and <code>NotesListScreen</code> (our page, empty for now).<p class="file-name"><code>lib/main.dart</code></p>
 <pre><code class="language-dart">import 'package:flutter/material.dart';
 
 void main() {  // Every Dart program starts here
@@ -181,6 +181,15 @@ class NotesListScreen extends StatelessWidget {  // A screen with fixed content 
 
   @override
   Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+    );
+  }
+}</code></pre>
+<p><strong>Recipe to create any widget:</strong> (1) write <code>class Name extends StatelessWidget</code>, (2) add a <code>const</code> constructor with <code>super.key</code>, (3) override <code>build</code> and return the widgets to draw.</p></li>
+<li>Save and press <code>R</code> (hot restart): <code>main()</code> changed, so hot reload is not enough. You should see a “My Notes” bar and an empty page.</li>
+<li><strong>The list.</strong> In <code>NotesListScreen</code>, replace <strong>only</strong> the <code>build</code> method with this one. It adds the data (<code>titles</code>) and the <code>body</code>: a <code>ListView.builder</code> that makes one <code>Card</code> with a <code>ListTile</code> per title.<pre><code class="language-dart">  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
     final titles = ['Buy milk', 'Prepare Flutter session', 'Call Sami'];  // Hard-coded data, replaced by SQLite in Step 4
 
     return Scaffold(  // Page skeleton: app bar, body, floating button
@@ -197,15 +206,17 @@ class NotesListScreen extends StatelessWidget {  // A screen with fixed content 
           );
         },
       ),
+    );
+  }</code></pre></li>
+<li>Save and press <code>r</code>: three cards appear. Match the code to the screen: <code>itemCount</code> → the number of rows; <code>itemBuilder</code> → builds one <code>Card</code> per title.</li>
+<li><strong>The + button.</strong> Inside the <code>Scaffold</code>, add the <code>floatingActionButton</code> after the <code>body</code> (the first two and last two lines below are already in your file, they show where it goes):<pre><code class="language-dart">        },
+      ),
       floatingActionButton: FloatingActionButton(  // The round + button
         onPressed: () {},  // Does nothing yet
         child: const Icon(Icons.add),  // The + icon
       ),
-    );
-  }
-}</code></pre></li>
-<li>Save and press <code>R</code> (hot restart): <code>main()</code> changed, so hot reload is not enough.</li>
-<li>Match the code to the screen: <code>AppBar</code> → the title bar; <code>itemCount</code> → the number of rows; <code>itemBuilder</code> → builds one <code>Card</code> per title; the floating button does nothing yet (<code>onPressed: () {}</code>).</li>
+    );</code></pre></li>
+<li>Save and press <code>r</code>: the <strong>+</strong> button appears at the bottom right. It does nothing yet (<code>onPressed: () {}</code>).</li>
 <li>Change one title in the <code>titles</code> list, save and press <code>r</code>: the list updates instantly.</li>
 <li>The file <code>test/widget_test.dart</code> now shows an error (it uses <code>MyApp</code>, which no longer exists). Delete this file for this session: it does not block <code>flutter run</code>.</li>
 </ol>

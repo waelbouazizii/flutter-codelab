@@ -154,7 +154,7 @@ code .</code></pre></li>
 <div class="step-duration" data-min="25"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Durée : 25 min</div>
 <div class="step-why"><p>En Flutter, tout est un <strong>widget</strong>, et l'écran est un arbre de widgets. Un <code>StatelessWidget</code> n'a pas de données qui changent. <code>Scaffold</code> est le squelette d'une page (barre d'app, corps, bouton flottant) et <code>ListView.builder</code> ne construit que les lignes visibles à l'écran.</p></div>
 <ol class="step-instructions">
-<li>Remplacez <strong>tout</strong> le contenu de <code>lib/main.dart</code> par :<p class="file-name"><code>lib/main.dart</code></p>
+<li><strong>Le squelette.</strong> Remplacez <strong>tout</strong> le contenu de <code>lib/main.dart</code> par deux widgets : <code>NotesApp</code> (la racine : Material Design, thème, premier écran) et <code>NotesListScreen</code> (notre page, vide pour l'instant).<p class="file-name"><code>lib/main.dart</code></p>
 <pre><code class="language-dart">import 'package:flutter/material.dart';
 
 void main() {  // Every Dart program starts here
@@ -181,6 +181,15 @@ class NotesListScreen extends StatelessWidget {  // A screen with fixed content 
 
   @override
   Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
+    return Scaffold(  // Page skeleton: app bar, body, floating button
+      appBar: AppBar(title: const Text('My Notes')),  // Top bar with the title
+    );
+  }
+}</code></pre>
+<p><strong>Recette pour créer un widget :</strong> (1) écrivez <code>class Nom extends StatelessWidget</code>, (2) ajoutez un constructeur <code>const</code> avec <code>super.key</code>, (3) redéfinissez <code>build</code> et renvoyez les widgets à dessiner.</p></li>
+<li>Enregistrez et appuyez sur <code>R</code> (hot restart) : <code>main()</code> a changé, le hot reload ne suffit pas. Vous devriez voir une barre « My Notes » et une page vide.</li>
+<li><strong>La liste.</strong> Dans <code>NotesListScreen</code>, remplacez <strong>uniquement</strong> la méthode <code>build</code> par celle-ci. Elle ajoute les données (<code>titles</code>) et le <code>body</code> : un <code>ListView.builder</code> qui crée une <code>Card</code> avec un <code>ListTile</code> par titre.<pre><code class="language-dart">  @override
+  Widget build(BuildContext context) {  // Describes the screen; Flutter calls it on every redraw
     final titles = ['Buy milk', 'Prepare Flutter session', 'Call Sami'];  // Hard-coded data, replaced by SQLite in Step 4
 
     return Scaffold(  // Page skeleton: app bar, body, floating button
@@ -197,15 +206,17 @@ class NotesListScreen extends StatelessWidget {  // A screen with fixed content 
           );
         },
       ),
+    );
+  }</code></pre></li>
+<li>Enregistrez et appuyez sur <code>r</code> : trois cartes apparaissent. Reliez le code à l'écran : <code>itemCount</code> → le nombre de lignes ; <code>itemBuilder</code> → construit une <code>Card</code> par titre.</li>
+<li><strong>Le bouton +.</strong> Dans le <code>Scaffold</code>, ajoutez le <code>floatingActionButton</code> après le <code>body</code> (les deux premières et les deux dernières lignes ci-dessous sont déjà dans votre fichier, elles montrent l'emplacement) :<pre><code class="language-dart">        },
+      ),
       floatingActionButton: FloatingActionButton(  // The round + button
         onPressed: () {},  // Does nothing yet
         child: const Icon(Icons.add),  // The + icon
       ),
-    );
-  }
-}</code></pre></li>
-<li>Enregistrez et appuyez sur <code>R</code> (hot restart) : <code>main()</code> a changé, le hot reload ne suffit pas.</li>
-<li>Reliez le code à l'écran : <code>AppBar</code> → la barre de titre ; <code>itemCount</code> → le nombre de lignes ; <code>itemBuilder</code> → construit une <code>Card</code> par titre ; le bouton flottant ne fait rien pour l'instant (<code>onPressed: () {}</code>).</li>
+    );</code></pre></li>
+<li>Enregistrez et appuyez sur <code>r</code> : le bouton <strong>+</strong> apparaît en bas à droite. Il ne fait rien pour l'instant (<code>onPressed: () {}</code>).</li>
 <li>Modifiez un titre de la liste <code>titles</code>, enregistrez et appuyez sur <code>r</code> : la liste se met à jour instantanément.</li>
 <li>Le fichier <code>test/widget_test.dart</code> affiche maintenant une erreur (il utilise <code>MyApp</code>, qui n'existe plus). Supprimez ce fichier pour cette séance : il ne bloque pas <code>flutter run</code>.</li>
 </ol>
