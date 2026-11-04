@@ -549,7 +549,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
 | `step-5` | add/edit form |
 | `step-6` | final app (theme, undo) |
 
-Checkpoint links: students can download `https://github.com/<user>/flutter-notes-solution/archive/refs/tags/step-N.zip`. Replace `<user>` once the repo exists.
+Checkpoint links: students can download `https://github.com/waelbouazizii/flutter-notes-solution/archive/refs/tags/step-N.zip`.
 
 ---
 
