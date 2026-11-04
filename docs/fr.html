@@ -153,6 +153,26 @@ code .</code></pre></li>
 <div class="step-goal"><strong><i class="fa-solid fa-bullseye ic" aria-hidden="true"></i>Objectif :</strong> remplacer le compteur par une liste de notes statique construite avec <code>Scaffold</code>, <code>ListView</code>, <code>Card</code> et <code>ListTile</code>.</div>
 <div class="step-duration" data-min="25"><i class="fa-regular fa-clock ic" aria-hidden="true"></i>Durée : 25 min</div>
 <div class="step-why"><p>En Flutter, tout est un <strong>widget</strong>, et l'écran est un arbre de widgets. Un <code>StatelessWidget</code> n'a pas de données qui changent. <code>Scaffold</code> est le squelette d'une page (barre d'app, corps, bouton flottant) et <code>ListView.builder</code> ne construit que les lignes visibles à l'écran.</p></div>
+<div class="step-anatomy">
+<h3>Ce que nous construisons</h3>
+<div class="anatomy-grid">
+<figure class="anatomy"><img src="img/step2-result.png" alt="Capture d'écran de l'application terminée à l'étape 2 : une barre My Notes, trois cartes de notes et un bouton rond plus" width="277" height="623"><svg class="anatomy-svg" viewBox="0 0 277 623" aria-hidden="true"><rect class="a1 dash" x="1" y="1" width="275" height="621" rx="3"/><rect class="a2" x="1" y="22" width="275" height="30" rx="3"/><rect class="a3 dash" x="1" y="56" width="275" height="545" rx="3"/><rect class="a4" x="3" y="60" width="268" height="48" rx="3"/><rect class="a5" x="7" y="63" width="258" height="42" rx="3"/><rect class="a6" x="11" y="66" width="52" height="17" rx="3"/><rect class="a7" x="11" y="85" width="60" height="14" rx="3"/><rect class="a8" x="228" y="563" width="39" height="40" rx="3"/><g class="b a1"><circle cx="14" cy="12" r="9"/><text x="14" y="16" text-anchor="middle">1</text></g><g class="b a2"><circle cx="259" cy="37" r="9"/><text x="259" y="41" text-anchor="middle">2</text></g><g class="b a3"><circle cx="259" cy="500" r="9"/><text x="259" y="504" text-anchor="middle">3</text></g><g class="b a4"><circle cx="262" cy="62" r="9"/><text x="262" y="66" text-anchor="middle">4</text></g><g class="b a5"><circle cx="246" cy="92" r="9"/><text x="246" y="96" text-anchor="middle">5</text></g><g class="b a6"><circle cx="76" cy="74" r="9"/><text x="76" y="78" text-anchor="middle">6</text></g><g class="b a7"><circle cx="84" cy="92" r="9"/><text x="84" y="96" text-anchor="middle">7</text></g><g class="b a8"><circle cx="228" cy="563" r="9"/><text x="228" y="567" text-anchor="middle">8</text></g></svg><figcaption>Le résultat de l'étape 2 sur un téléphone. Chaque numéro est un widget.</figcaption></figure>
+<div>
+<p><strong>Comment c'est construit :</strong> un écran est un arbre de widgets, comme des boîtes dans des boîtes. Lisez-le de l'extérieur vers l'intérieur : chaque widget est placé <em>dans</em> celui du dessus.</p>
+<ul class="anatomy-tree">
+<li><span class="abadge a1">1</span> <code>Scaffold</code>
+<ul>
+<li><span class="abadge a2">2</span> <code>appBar:</code> <code>AppBar</code></li>
+<li><span class="abadge a3">3</span> <code>body:</code> <code>ListView.builder</code> → répété une fois par titre:
+<ul><li><span class="abadge a4">4</span> <code>Card</code> → <span class="abadge a5">5</span> <code>ListTile</code> → <span class="abadge a6">6</span> <code>title</code> + <span class="abadge a7">7</span> <code>subtitle</code></li></ul></li>
+<li><span class="abadge a8">8</span> <code>floatingActionButton:</code> <code>FloatingActionButton</code></li>
+</ul></li>
+</ul>
+<p class="note">Le bandeau rouge <strong>DEBUG</strong> en haut à droite n'apparaît que dans les versions de débogage : ignorez-le.</p>
+</div>
+</div>
+<table class="anatomy-table"><thead><tr><th>#</th><th>Widget</th><th>Rôle</th><th>Où dans le code</th></tr></thead><tbody><tr><td><span class="abadge a1">1</span></td><td><strong>Scaffold</strong></td><td>Le squelette de la page : il contient la barre d'app, le corps et le bouton flottant.</td><td><code>return Scaffold(</code></td></tr><tr><td><span class="abadge a2">2</span></td><td><strong>AppBar</strong></td><td>La barre en haut, avec le titre.</td><td><code>appBar: AppBar(title: const Text('My Notes'))</code></td></tr><tr><td><span class="abadge a3">3</span></td><td><strong>body (ListView.builder)</strong></td><td>La zone principale. Une liste défilante qui ne construit que les lignes visibles.</td><td><code>body: ListView.builder(</code></td></tr><tr><td><span class="abadge a4">4</span></td><td><strong>Card</strong></td><td>Une « carte » en relief par ligne, avec une marge autour.</td><td><code>return Card(</code></td></tr><tr><td><span class="abadge a5">5</span></td><td><strong>ListTile</strong></td><td>Une ligne toute prête : elle place un titre et un sous-titre pour vous.</td><td><code>child: ListTile(</code></td></tr><tr><td><span class="abadge a6">6</span></td><td><strong>title</strong></td><td>Le texte principal de la ligne (ici, le titre de la note).</td><td><code>title: Text(titles[index])</code></td></tr><tr><td><span class="abadge a7">7</span></td><td><strong>subtitle</strong></td><td>Le petit texte sous le titre.</td><td><code>subtitle: const Text('Tap to open')</code></td></tr><tr><td><span class="abadge a8">8</span></td><td><strong>FloatingActionButton</strong></td><td>Le bouton rond + qui flotte en bas à droite.</td><td><code>floatingActionButton: FloatingActionButton(</code></td></tr></tbody></table>
+</div>
 <ol class="step-instructions">
 <li><strong>Le squelette.</strong> Remplacez <strong>tout</strong> le contenu de <code>lib/main.dart</code> par deux widgets : <code>NotesApp</code> (la racine : Material Design, thème, premier écran) et <code>NotesListScreen</code> (notre page, vide pour l'instant).<p class="file-name"><code>lib/main.dart</code></p>
 <pre><code class="language-dart">import 'package:flutter/material.dart';
@@ -209,13 +229,10 @@ class NotesListScreen extends StatelessWidget {  // A screen with fixed content 
     );
   }</code></pre></li>
 <li>Enregistrez et appuyez sur <code>r</code> : trois cartes apparaissent. Reliez le code à l'écran : <code>itemCount</code> → le nombre de lignes ; <code>itemBuilder</code> → construit une <code>Card</code> par titre.</li>
-<li><strong>Le bouton +.</strong> Dans le <code>Scaffold</code>, ajoutez le <code>floatingActionButton</code> après le <code>body</code> (les deux premières et les deux dernières lignes ci-dessous sont déjà dans votre fichier, elles montrent l'emplacement) :<pre><code class="language-dart">        },
-      ),
-      floatingActionButton: FloatingActionButton(  // The round + button
+<li><strong>Le bouton +.</strong> Dans le <code>Scaffold</code>, ajoutez ces 4 lignes <strong>juste après le <code>body</code></strong> : après la ligne <code>),</code> qui ferme <code>ListView.builder</code>, et avant le <code>);</code> final. Ne recopiez aucune parenthèse fermante déjà présente dans votre fichier.<pre><code class="language-dart">      floatingActionButton: FloatingActionButton(  // The round + button
         onPressed: () {},  // Does nothing yet
         child: const Icon(Icons.add),  // The + icon
-      ),
-    );</code></pre></li>
+      ),</code></pre></li>
 <li>Enregistrez et appuyez sur <code>r</code> : le bouton <strong>+</strong> apparaît en bas à droite. Il ne fait rien pour l'instant (<code>onPressed: () {}</code>).</li>
 <li>Modifiez un titre de la liste <code>titles</code>, enregistrez et appuyez sur <code>r</code> : la liste se met à jour instantanément.</li>
 <li>Le fichier <code>test/widget_test.dart</code> affiche maintenant une erreur (il utilise <code>MyApp</code>, qui n'existe plus). Supprimez ce fichier pour cette séance : il ne bloque pas <code>flutter run</code>.</li>

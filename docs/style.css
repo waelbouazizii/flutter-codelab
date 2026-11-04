@@ -202,7 +202,11 @@ button:focus-visible {
 .icon-btn:hover,
 .nav-btn:hover:not(:disabled) { background: var(--accent-soft); }
 .nav-btn:disabled { opacity: 0.4; cursor: default; }
-.menu-btn { display: none; padding: 0.3rem 0.7rem; }
+.menu-btn { display: inline-flex; padding: 0.3rem 0.7rem; }
+/* Desktop: the menu button hides / shows the left navigation. */
+@media (min-width: 768px) {
+  .sidebar-collapsed .sidebar { display: none; }
+}
 .pager { display: flex; gap: 0.4rem; flex: none; }
 
 .lang-toggle {
@@ -460,3 +464,45 @@ pre code[class*="language-"] {
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .progress-bar { transition: none; }
 }
+
+/* Step 2 anatomy: annotated screenshot + legend */
+.step-anatomy { margin: 1rem 0; }
+.step-anatomy h3 { margin: 0 0 0.6rem; }
+.anatomy-grid { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.anatomy { position: relative; margin: 0; }
+.anatomy img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.anatomy figcaption { margin-top: 0.3rem; font-size: 0.88rem; color: var(--muted); }
+.anatomy-svg { position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 277 / 623; pointer-events: none; }
+.anatomy-svg rect { fill: none; stroke-width: 2; }
+.anatomy-svg rect.dash { stroke-dasharray: 5 3; }
+.anatomy-svg .b text { fill: #fff; font: 700 11px Roboto, sans-serif; }
+.anatomy-table td { vertical-align: top; }
+.abadge { display: inline-flex; align-items: center; justify-content: center; width: 1.35rem; height: 1.35rem; border-radius: 50%; color: #fff; font-size: 0.78rem; font-weight: 700; }
+.anatomy-tree, .anatomy-tree ul { list-style: none; padding-left: 1.1rem; }
+.anatomy-tree li { margin: 0.3rem 0; }
+.anatomy-tree ul { padding-left: 1.6rem; }
+@media (max-width: 767.98px) { .anatomy-grid { grid-template-columns: 1fr; } .anatomy { max-width: 17rem; } }
+.anatomy-svg rect.a1 { stroke: #e53935; }
+.anatomy-svg .b.a1 circle { fill: #e53935; }
+.abadge.a1 { background: #e53935; }
+.anatomy-svg rect.a2 { stroke: #fb8c00; }
+.anatomy-svg .b.a2 circle { fill: #fb8c00; }
+.abadge.a2 { background: #fb8c00; }
+.anatomy-svg rect.a3 { stroke: #43a047; }
+.anatomy-svg .b.a3 circle { fill: #43a047; }
+.abadge.a3 { background: #43a047; }
+.anatomy-svg rect.a4 { stroke: #1e88e5; }
+.anatomy-svg .b.a4 circle { fill: #1e88e5; }
+.abadge.a4 { background: #1e88e5; }
+.anatomy-svg rect.a5 { stroke: #8e24aa; }
+.anatomy-svg .b.a5 circle { fill: #8e24aa; }
+.abadge.a5 { background: #8e24aa; }
+.anatomy-svg rect.a6 { stroke: #00897b; }
+.anatomy-svg .b.a6 circle { fill: #00897b; }
+.abadge.a6 { background: #00897b; }
+.anatomy-svg rect.a7 { stroke: #d81b60; }
+.anatomy-svg .b.a7 circle { fill: #d81b60; }
+.abadge.a7 { background: #d81b60; }
+.anatomy-svg rect.a8 { stroke: #6d4c41; }
+.anatomy-svg .b.a8 circle { fill: #6d4c41; }
+.abadge.a8 { background: #6d4c41; }

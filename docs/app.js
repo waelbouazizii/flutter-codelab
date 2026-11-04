@@ -4,6 +4,7 @@
 
   var PROGRESS_KEY = 'flutter-codelab-progress';
   var LANG_KEY = 'flutter-codelab-lang';
+  var SIDEBAR_KEY = 'flutter-codelab-sidebar';
   var lang = document.documentElement.lang === 'fr' ? 'fr' : 'en';
 
   function storageGet(key) {
@@ -221,9 +222,33 @@
 
     if (prevBtn) prevBtn.addEventListener('click', function () { go(current - 1); });
     if (nextBtn) nextBtn.addEventListener('click', function () { go(current + 1); });
-    if (menuBtn) menuBtn.addEventListener('click', function () {
-      setDrawer(!document.body.classList.contains('drawer-open'));
-    });
+    // Desktop: the menu button hides / shows the sidebar (choice saved). Phone: it opens the drawer.
+    var desktop = window.matchMedia('(min-width: 768px)');
+    var menuLabels = lang === 'fr'
+      ? { hide: 'Masquer le sommaire', show: 'Afficher le sommaire' }
+      : { hide: 'Hide the contents', show: 'Show the contents' };
+
+    function setCollapsed(collapsed) {
+      document.body.classList.toggle('sidebar-collapsed', collapsed);
+      if (menuBtn && desktop.matches) {
+        menuBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        menuBtn.setAttribute('aria-label', collapsed ? menuLabels.show : menuLabels.hide);
+        menuBtn.title = collapsed ? menuLabels.show : menuLabels.hide;
+      }
+    }
+
+    if (menuBtn) {
+      setCollapsed(storageGet(SIDEBAR_KEY) === 'collapsed');
+      menuBtn.addEventListener('click', function () {
+        if (desktop.matches) {
+          var collapsed = !document.body.classList.contains('sidebar-collapsed');
+          setCollapsed(collapsed);
+          storageSet(SIDEBAR_KEY, collapsed ? 'collapsed' : 'open');
+        } else {
+          setDrawer(!document.body.classList.contains('drawer-open'));
+        }
+      });
+    }
     if (overlay) overlay.addEventListener('click', function () { setDrawer(false); });
 
     document.addEventListener('keydown', function (event) {
